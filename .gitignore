@@ -1,0 +1,8 @@
+# nix build result symlinks
+result
+result-*
+
+# editor / OS cruft
+.direnv/
+*.swp
+.DS_Store
