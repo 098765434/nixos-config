@@ -4,10 +4,10 @@
 {
   # niri compositor — installs it, registers the Wayland session, wires polkit
   # + portals. Module + package come from niri-flake (see flake.nix), which also
-  # enables niri's binary cache so it isn't compiled locally. Your niri
+  # enables niri's binary cache so it isn't compiled locally. The module already
+  # defaults the package to niri-stable, so enable is all we need. Your niri
   # config.kdl is managed per-user in ./home via niri-flake's home-manager module.
   programs.niri.enable = true;
-  programs.niri.package = pkgs.niri-stable;   # from the niri-flake overlay
 
   # greetd + tuigreet: tiny TTY greeter that lists sessions (pick "niri").
   services.greetd = {

@@ -89,6 +89,19 @@ flatpak install flathub app.zen_browser.zen
 - niri-flake coexists with any nixpkgs `programs.niri` (niri-flake handles this;
   if it errors, see the niri-flake README).
 
+## Security & privacy
+
+- **Full-disk encryption**: LUKS2 + btrfs, passphrase + TPM2 auto-unlock (see
+  `modules/disk.nix`).
+- **Auto screen-lock**: hypridle locks (swaylock) after 4 min idle and before
+  sleep; `Super+Alt+L` locks on demand. swaylock auth via a system PAM entry.
+- **Network privacy**: Wi-Fi MAC randomization (`networking.networkmanager.wifi.macAddress`)
+  and encrypted DNS over TLS via systemd-resolved (`modules/services.nix`).
+- **Secure Boot (lanzaboote)** — *staged, enable after install*. Completes the
+  LUKS+TPM2 chain by signing the boot path. Runbook is in `modules/security.nix`:
+  install → `sbctl create-keys` → uncomment the lanzaboote block + rebuild →
+  firmware Setup Mode → `sbctl enroll-keys --microsoft` → enable Secure Boot.
+
 ## TODO / future
 
 - Harden the password: replace `initialPassword` in `configuration.nix` with a

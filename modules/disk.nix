@@ -30,7 +30,7 @@
           ESP = {
             priority = 1;
             name = "ESP";
-            size = "1G";
+            size = "2G";   # headroom for the latest kernel + several generations
             type = "EF00";
             content = {
               type = "filesystem";

@@ -19,15 +19,20 @@
     };
 
     # niri compositor: newer than nixpkgs, provides the NixOS + home-manager
-    # modules, and auto-configures its binary cache (so niri isn't compiled
-    # locally). We follow our nixpkgs to avoid a second copy.
-    niri = {
-      url = "github:sodiboo/niri-flake";
+    # modules, and auto-configures its binary cache. Intentionally does NOT
+    # follow our nixpkgs — the niri.cachix.org cache is built against niri-flake's
+    # own pinned nixpkgs, so following would force niri to compile locally (and
+    # can break eval when it needs a package version our nixpkgs dropped).
+    niri.url = "github:sodiboo/niri-flake";
+
+    # Secure Boot (signed boot chain) — completes the LUKS+TPM2 story.
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v0.4.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, disko, niri, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, disko, niri, lanzaboote, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -46,6 +51,9 @@
 
           # niri module (programs.niri + binary cache).
           niri.nixosModules.niri
+
+          # Secure Boot module (inert until boot.lanzaboote.enable; see modules/security.nix).
+          lanzaboote.nixosModules.lanzaboote
 
           # home-manager as a NixOS module so one rebuild does both.
           home-manager.nixosModules.home-manager

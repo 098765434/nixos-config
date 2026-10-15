@@ -76,7 +76,14 @@
   services.hypridle = {
     enable = true;
     settings = {
-      general.ignore_dbus_inhibit = false;
+      general = {
+        ignore_dbus_inhibit = false;
+        # Security: lock the screen on idle and before sleep. loginctl emits the
+        # lock signal; hypridle's lock_cmd then runs swaylock (single instance).
+        lock_cmd = "pidof swaylock || swaylock";
+        before_sleep_cmd = "loginctl lock-session";
+        after_sleep_cmd = "niri msg action power-on-monitors";
+      };
       listener = [
         {
           timeout = 180;                         # 3 min: dim OLED
@@ -84,11 +91,27 @@
           on-resume = "brightnessctl -r";
         }
         {
+          timeout = 240;                         # 4 min: lock the screen
+          on-timeout = "loginctl lock-session";
+        }
+        {
           timeout = 300;                         # 5 min: DPMS off
           on-timeout = "niri msg action power-off-monitors";
           on-resume = "niri msg action power-on-monitors";
         }
       ];
+    };
+  };
+
+  # Screen locker — used by hypridle's lock_cmd and the niri Super+Alt+L bind.
+  # Authentication works via the system PAM entry (modules/security.nix).
+  programs.swaylock = {
+    enable = true;
+    settings = {
+      color = "232629";
+      indicator-radius = 100;
+      indicator-thickness = 7;
+      show-failed-attempts = true;
     };
   };
 

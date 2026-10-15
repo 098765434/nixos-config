@@ -2,6 +2,10 @@
 { config, pkgs, ... }:
 
 {
+  # Latest kernel — this is very new AMD silicon (Ryzen AI 7 450 / Krackan Point,
+  # Radeon 860M / RDNA 3.5), which benefits from the newest GPU/power/sensor support.
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
   # Firmware blobs + AMD CPU microcode updates.
   hardware.enableRedistributableFirmware = true;
   hardware.cpu.amd.updateMicrocode = true;

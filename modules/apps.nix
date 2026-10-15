@@ -6,7 +6,7 @@
     # --- niri session companions (referenced by niri config.kdl) ---
     foot             # terminal (Mod+Return / Mod+T)
     wofi             # launcher (Mod+D)
-    swaylock         # screen locker (Super+Alt+L)
+    # swaylock is provided by home-manager (programs.swaylock) with its config
     waybar           # status bar
     hypridle         # idle management (needs a hypridle.conf to act)
     playerctl        # media keys
@@ -43,6 +43,7 @@
     fzf
     ripgrep
     github-cli       # gh
+    claude-code      # Anthropic's Claude Code CLI
     neovim
     rbw              # Bitwarden CLI
     bitwarden-desktop

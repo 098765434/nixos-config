@@ -20,6 +20,7 @@
     ./modules/desktop.nix
     ./modules/gaming.nix
     ./modules/services.nix
+    ./modules/security.nix
     ./modules/apps.nix
 
     # ArtCraft creative apps (vectorcraft, figcraft, photocraft, designcraft).
@@ -41,7 +42,15 @@
   # Networking
   # ---------------------------------------------------------------------------
   networking.hostName = "nixos-niri";
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+    enable = true;
+    # Privacy: randomize the Wi-Fi MAC so networks can't track your hardware
+    # address across locations. Use "stable" instead if a captive portal or a
+    # MAC-allowlisted network gives you trouble.
+    wifi.macAddress = "random";
+    # Hand DNS to systemd-resolved (encrypted DNS configured in services.nix).
+    dns = "systemd-resolved";
+  };
 
   # ---------------------------------------------------------------------------
   # Locale / time / keyboard (Norwegian — adjust to taste)
@@ -85,10 +94,9 @@
   # ---------------------------------------------------------------------------
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
-    # Hardlink identical files in the store to reclaim disk (your disk is tight).
+    # Hardlink identical files in the store to reclaim disk (dedupes on every build).
     auto-optimise-store = true;
   };
-  nix.optimise.automatic = true;
   nix.gc = {
     automatic = true;
     dates = "weekly";
