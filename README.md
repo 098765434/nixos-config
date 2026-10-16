@@ -127,7 +127,7 @@ session **niri**.
    of pulling:
    ```
    # run ON the debian desktop (enter this machine's new password when asked):
-   scp -r ~/nixos-migration-* ocbk@nixos-niri:~/
+   scp -r ~/nixos-migration-* ocbk@nixos:~/
    ```
    ```
    # then back on THIS machine:
