@@ -37,19 +37,23 @@ connect Wi-Fi from the top-right network menu, then open a terminal (Console).
 
 ### 1. Clone this repo
 
-It is **private**, so cloning asks for a GitHub login. Use a fine-grained
-Personal Access Token (Contents: read) as the password:
+The repo is made **public** for the install, so cloning needs no login — just:
 
 ```
 git clone https://github.com/098765434/nixos-config.git
-#   Username: 098765434
-#   Password: <paste your PAT — the github_pat_… string>
 cd nixos-config
 git log --oneline -1
 ```
 
-The last command **must** print `9a9deb4 Fix 26.05 eval errors …` (or something
-newer). If it shows anything else, stop — you cloned the wrong revision.
+The last command **must** print `9a9deb4 Fix 26.05 eval errors …` or a *newer*
+commit on top. If it shows an older or unknown commit, stop — you cloned the
+wrong revision.
+
+> Set the repo back to **private** afterward: GitHub → the repo → Settings →
+> General → Change repository visibility. (If you'd rather keep it private during
+> the install, clone over HTTPS and paste a fine-grained PAT — Contents: read —
+> as the password; the token must be on the live session's clipboard to paste
+> with Ctrl+Shift+V.)
 
 ### 2. Confirm the target disk
 
