@@ -1,6 +1,6 @@
 @define-color foreground #eff0f1;
 @define-color foreground-inactive #7f8c8d;
-@define-color background #232629;
+@define-color background #000;
 @define-color background-alt #31363b;
 
 * {

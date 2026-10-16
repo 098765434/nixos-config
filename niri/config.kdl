@@ -115,7 +115,7 @@ window-rule {
 layer-rule {
     match namespace="^amane-launcher$"
     geometry-corner-radius 22
-    background-effect {
+    /-background-effect {
         blur true
         xray false
     }
@@ -254,7 +254,7 @@ binds {
 
     Mod+F { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
-    Mod+M { maximize-window-to-edges; }
+    Mod+M { maximize-column; }
     Mod+Ctrl+F { expand-column-to-available-width; }
 
     Mod+C { center-column; }
