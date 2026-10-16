@@ -6,3 +6,6 @@ result-*
 .direnv/
 *.swp
 .DS_Store
+
+# a stray clone of this repo inside itself (do not track as a submodule)
+/nixos-config/
