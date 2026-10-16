@@ -17,11 +17,13 @@
     disk.main = {
       type = "disk";
 
-      # !!! SET THIS PER MACHINE !!!
-      #  - QEMU/KVM virtio VM:  /dev/vda
-      #  - Your real laptop:    /dev/nvme0n1   (prefer a stable /dev/disk/by-id/… path)
-      # Check with `lsblk` in the installer. disko ERASES this whole disk.
-      device = "/dev/vda";
+      # Target disk — this machine's WD PC SN7100S 256 GB NVMe, by its stable
+      # /dev/disk/by-id path (survives reboots/enumeration order; immune to the
+      # nvme0n1-vs-nvme1n1 shuffle that a bare /dev name risks). Resolves to
+      # /dev/nvme0n1. disko ERASES this whole disk. Reconfirm in the installer:
+      #   lsblk ; ls -l /dev/disk/by-id/ | grep nvme
+      # (For a QEMU/KVM virtio test VM, swap this back to /dev/vda.)
+      device = "/dev/disk/by-id/nvme-WD_PC_SN7100S_SDFQNSK-256G-2001_26112P813731";
 
       content = {
         type = "gpt";
@@ -73,17 +75,19 @@
 # ============================================================================
 # INSTALL FLOW (from the NixOS installer, with this repo checked out):
 #
-#   1. Edit `device` above to match the target disk (lsblk to confirm).
+#   1. Confirm `device` above still matches the target disk (lsblk ; ls -l
+#      /dev/disk/by-id/ | grep nvme). It is already set to this laptop's NVMe.
 #
 #   2. Partition + encrypt + format + mount (prompts for the LUKS passphrase):
 #        sudo nix --experimental-features "nix-command flakes" run \
 #          github:nix-community/disko/latest -- \
 #          --mode destroy,format,mount --flake .#nixos-niri
 #
-#   3. Generate hardware config WITHOUT filesystems (disko owns those):
+#   3. hardware-configuration.nix is already committed (hand-written for this
+#      machine). OPTIONAL sanity check — regenerate and diff, filesystems off
+#      (disko owns those); do NOT overwrite unless the diff shows a real gap:
 #        sudo nixos-generate-config --no-filesystems --root /mnt
-#      Then copy the generated /mnt/etc/nixos/hardware-configuration.nix into
-#      this repo (next to flake.nix).
+#        diff /mnt/etc/nixos/hardware-configuration.nix ./hardware-configuration.nix
 #
 #   4. Install:
 #        sudo nixos-install --flake .#nixos-niri

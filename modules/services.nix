@@ -8,6 +8,88 @@
   # SSH server.
   services.openssh.enable = true;
 
+  # Syncthing — continuously syncs the Obsidian vault with the "pi5" server.
+  # DECLARATIVE: the devices/folders below are the source of truth. With
+  # overrideDevices/overrideFolders (default true) any device or folder added in
+  # the web UI is wiped on the next rebuild — manage sync topology HERE, not the
+  # GUI. On a fresh install this pulls the whole vault down from pi5, so it also
+  # doubles as the vault's restore path.
+  services.syncthing = {
+    enable = true;
+    user = "ocbk";
+    group = "users";
+    configDir = "/home/ocbk/.config/syncthing";
+    dataDir = "/home/ocbk";                  # base for any relative folder paths
+    openDefaultPorts = true;                 # 22000 tcp+udp (sync), 21027 udp (discovery)
+    guiAddress = "127.0.0.1:8384";           # admin UI stays loopback-only
+    settings = {
+      devices.pi5.id =
+        "RAZCYCW-SAZHSLR-AQIMHNO-ZVDGZTW-DZTVXIR-USOFO57-45YICWG-7S4ZKQF";
+      folders."obsidian-vault" = {
+        label = "Obsidian Vault";
+        path = "/home/ocbk/obsidian/MyVault";
+        type = "sendreceive";
+        devices = [ "pi5" ];
+      };
+    };
+  };
+
+  # ---------------------------------------------------------------------------
+  # On-demand "cloud" mount of the Debian desktop's home over Tailscale.
+  # ---------------------------------------------------------------------------
+  # rclone's SFTP backend mounts ocbk@debian:/home/ocbk at /home/ocbk/Cloud.
+  # With --vfs-cache-mode full, files show as a normal folder and are fetched on
+  # access (Dropbox "files on demand" style) — nothing extra runs on the desktop
+  # beyond its existing SSH server. Transport is authenticated/encrypted by
+  # Tailscale (WireGuard), so no inbound firewall hole is needed on this laptop.
+  #
+  # DESKTOP SIDE (run once, on `debian`):
+  #   1. Ensure sshd is running and reachable over Tailscale.
+  #   2. Authorize this laptop's key:
+  #        mkdir -p ~/.ssh && chmod 700 ~/.ssh
+  #        echo '<laptop /home/ocbk/.ssh/id_ed25519.pub>' >> ~/.ssh/authorized_keys
+  #        chmod 600 ~/.ssh/authorized_keys
+  #
+  # LAPTOP SIDE: /home/ocbk/.ssh/id_ed25519 must exist (carry the keypair over
+  # from the old install, or generate one and authorize its .pub on the desktop).
+  # Until it does, the service just retries.
+  #
+  # Runs as root so it can mount without a setuid-fusermount wrapper; --allow-other
+  # plus --uid/--gid present the files as user ocbk (uid 1000 / group users=100).
+  programs.fuse.userAllowOther = true;
+
+  systemd.services.rclone-desktop = {
+    description = "rclone mount: debian desktop home (SFTP/Tailscale) -> /home/ocbk/Cloud";
+    after = [ "network-online.target" "tailscaled.service" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.fuse3 ];   # rclone needs fusermount3 on PATH to mount
+    environment = {
+      RCLONE_CONFIG_DESKTOP_TYPE = "sftp";
+      RCLONE_CONFIG_DESKTOP_HOST = "debian.tail8c36e9.ts.net";
+      RCLONE_CONFIG_DESKTOP_USER = "ocbk";
+      RCLONE_CONFIG_DESKTOP_KEY_FILE = "/home/ocbk/.ssh/id_ed25519";
+      RCLONE_CONFIG_DESKTOP_SHELL_TYPE = "unix";
+    };
+    serviceConfig = {
+      Type = "notify";
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /home/ocbk/Cloud";
+      ExecStart = ''
+        ${pkgs.rclone}/bin/rclone mount desktop:/home/ocbk /home/ocbk/Cloud \
+          --allow-other \
+          --uid 1000 --gid 100 --umask 077 \
+          --vfs-cache-mode full \
+          --vfs-cache-max-size 5G \
+          --vfs-cache-max-age 168h \
+          --dir-cache-time 24h \
+          --attr-timeout 1s
+      '';
+      ExecStop = "${pkgs.fuse3}/bin/fusermount3 -u /home/ocbk/Cloud";
+      Restart = "on-failure";
+      RestartSec = 15;
+    };
+  };
+
   # mDNS / network discovery (KDE Connect, printers, .local names).
   services.avahi = {
     enable = true;

@@ -50,6 +50,24 @@
     wifi.macAddress = "random";
     # Hand DNS to systemd-resolved (encrypted DNS configured in services.nix).
     dns = "systemd-resolved";
+
+    # Declarative Wi-Fi profile. The SSID lives here; the PSK does NOT — it is
+    # read at activation from a local env file that is never in the Nix store or
+    # git. Create it on the machine, root-owned and chmod 600:
+    #     /etc/nm-secrets.env  ->  HOME_WIFI_PSK=your-actual-password
+    ensureProfiles = {
+      environmentFiles = [ "/etc/nm-secrets.env" ];
+      profiles.home-wifi = {
+        connection = { id = "home-wifi"; type = "wifi"; };
+        wifi.ssid = "TP-Link_3CEE";
+        wifi-security = {
+          key-mgmt = "wpa-psk";
+          psk = "$HOME_WIFI_PSK";   # substituted from environmentFiles
+        };
+        ipv4.method = "auto";
+        ipv6.method = "auto";
+      };
+    };
   };
 
   # ---------------------------------------------------------------------------
@@ -76,6 +94,7 @@
       "video"
       "audio"
       "i2c"             # ddcutil (external-monitor brightness) without root
+      "adbusers"        # adb device access without root (programs.adb below)
     ];
     # TODO (daily driver): replace this plaintext password with a hash so it's
     # not stored in the repo. Generate one with:  mkpasswd -m sha-512
@@ -83,6 +102,11 @@
     initialPassword = "nixos";
   };
   security.sudo.wheelNeedsPassword = true;
+
+  # Android Debug Bridge — installs adb/fastboot (android-tools), the device
+  # udev rules, and the "adbusers" group (ocbk is a member, above) so adb talks
+  # to phones without root.
+  programs.adb.enable = true;
 
   environment.variables.EDITOR = "nvim";
 

@@ -3,7 +3,7 @@
 # Manages your per-user dotfiles declaratively. Edit the sources in this repo
 # and run `nixos-rebuild switch`; the files become read-only symlinks in
 # ~/.config. `inputs` is passed through from the flake (extraSpecialArgs).
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, lib, ... }:
 
 {
   imports = [
@@ -23,6 +23,35 @@
     "waybar/config".source = ../waybar/config;
     "waybar/style.css".source = ../waybar/style.css;
   };
+
+  # --- XDG user directories ---
+  # niri has no desktop environment to run xdg-user-dirs, so nothing would create
+  # the standard folders on first login — declare them here instead. Enabling the
+  # module writes the FULL set with defaults (and would create Desktop/Music/etc),
+  # so the unwanted ones are explicitly set to null to drop them.
+  xdg.userDirs = {
+    enable = true;
+    createDirectories = true;            # mkdir the standard dirs below
+    documents = "${config.home.homeDirectory}/Documents";
+    download  = "${config.home.homeDirectory}/Downloads";
+    pictures  = "${config.home.homeDirectory}/Pictures";
+    templates = "${config.home.homeDirectory}/Templates";  # nautilus "New Document"
+    # Dropped — not used on this setup:
+    desktop     = null;
+    music       = null;
+    videos      = null;
+    publicShare = null;
+    # Non-standard extra: register ~/Projects as an XDG dir. createDirectories
+    # only makes the standard dirs, so the folder itself is ensured below.
+    extraConfig.XDG_PROJECTS_DIR = "${config.home.homeDirectory}/Projects";
+  };
+
+  # Ensure ~/Projects exists as a real, writable directory (not a store symlink),
+  # since xdg.userDirs.createDirectories doesn't cover extraConfig entries.
+  home.activation.ensureProjectsDir =
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      run mkdir -p "$HOME/Projects"
+    '';
 
   # --- Terminal: foot ---
   programs.foot = {

@@ -32,19 +32,21 @@ update-artcraft.sh     refresh ArtCraft to latest releases
 > git init && git add -A
 > ```
 
-1. **Set the target disk** in `modules/disk.nix` (`device = …`): `/dev/vda` in a
-   QEMU VM, your real disk (e.g. `/dev/nvme0n1`) on the laptop. `lsblk` to confirm.
-   ⚠️ disko **erases** that disk.
+1. **Confirm the target disk** in `modules/disk.nix` (`device = …`): already set
+   to this laptop's NVMe by its `/dev/disk/by-id/` path. `lsblk` to confirm.
+   ⚠️ disko **erases** that disk. (In a QEMU VM, set `/dev/vda` instead.)
 2. **Partition + encrypt + format + mount** (prompts for the LUKS passphrase):
    ```
    sudo nix --experimental-features "nix-command flakes" run \
      github:nix-community/disko/latest -- \
      --mode destroy,format,mount --flake .#nixos-niri
    ```
-3. **Generate hardware config without filesystems** (disko owns those), then copy
-   it into this repo next to `flake.nix`:
+3. **`hardware-configuration.nix` is already committed** (hand-written for this
+   machine). Optional: regenerate without filesystems (disko owns those) and
+   diff — don't overwrite unless the diff reveals a gap:
    ```
    sudo nixos-generate-config --no-filesystems --root /mnt
+   diff /mnt/etc/nixos/hardware-configuration.nix ./hardware-configuration.nix
    ```
 4. **Install**:
    ```
