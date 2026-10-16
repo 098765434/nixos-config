@@ -6,11 +6,12 @@
 { config, pkgs, inputs, lib, ... }:
 
 {
-  imports = [
-    # niri's home-manager module — lets us manage config.kdl with validation
-    # against the installed niri version at build time.
-    inputs.niri.homeModules.niri
-  ];
+  # NOTE: do NOT import inputs.niri.homeModules.niri here. niri-flake's NixOS
+  # module (niri.nixosModules.niri in flake.nix) already injects the niri
+  # home-manager module into every home-manager user, so importing it again
+  # declares programs.niri.* twice and fails eval:
+  #   "option home-manager.users.ocbk.programs.niri.finalConfig is already declared".
+  # programs.niri.config below still resolves against that auto-injected module.
 
   home.stateVersion = "26.05";
 

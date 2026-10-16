@@ -94,7 +94,6 @@
       "video"
       "audio"
       "i2c"             # ddcutil (external-monitor brightness) without root
-      "adbusers"        # adb device access without root (programs.adb below)
     ];
     # TODO (daily driver): replace this plaintext password with a hash so it's
     # not stored in the repo. Generate one with:  mkpasswd -m sha-512
@@ -103,10 +102,9 @@
   };
   security.sudo.wheelNeedsPassword = true;
 
-  # Android Debug Bridge — installs adb/fastboot (android-tools), the device
-  # udev rules, and the "adbusers" group (ocbk is a member, above) so adb talks
-  # to phones without root.
-  programs.adb.enable = true;
+  # Android Debug Bridge: on 26.05 (systemd 258) `programs.adb` is gone — device
+  # uaccess is handled automatically for the logged-in user, so adb just needs
+  # the tools, which live in android-tools (modules/apps.nix). No group needed.
 
   environment.variables.EDITOR = "nvim";
 

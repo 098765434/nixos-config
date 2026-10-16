@@ -102,14 +102,17 @@
   # that block port 853). Tailscale MagicDNS integrates with resolved cleanly.
   services.resolved = {
     enable = true;
-    dnssec = "allow-downgrade";
-    dnsovertls = "opportunistic";
-    # Encrypted fallbacks (Cloudflare + Quad9), used when the network provides none.
-    fallbackDns = [
-      "1.1.1.1#cloudflare-dns.com"
-      "1.0.0.1#cloudflare-dns.com"
-      "9.9.9.9#dns.quad9.net"
-    ];
+    # 26.05: dnssec/dnsovertls/fallbackDns were folded into settings.Resolve.*.
+    settings.Resolve = {
+      DNSSEC = "allow-downgrade";
+      DNSOverTLS = "opportunistic";
+      # Encrypted fallbacks (Cloudflare + Quad9), used when the network provides none.
+      FallbackDNS = [
+        "1.1.1.1#cloudflare-dns.com"
+        "1.0.0.1#cloudflare-dns.com"
+        "9.9.9.9#dns.quad9.net"
+      ];
+    };
   };
 
   # GVFS — makes nautilus fully functional: trash, mounting, network shares.

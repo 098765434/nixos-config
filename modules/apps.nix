@@ -29,6 +29,7 @@
     openssl          # also used by update-artcraft.sh (hashing)
     htop
     rclone           # on-demand SFTP mount of the debian desktop (see services.nix)
+    android-tools    # adb + fastboot (uaccess handled by systemd on 26.05)
 
     # --- desktop essentials ---
     hyprpolkitagent  # polkit agent (run by the systemd service in desktop.nix)
@@ -67,7 +68,7 @@
     mission-center        # system/resource monitor
     heroic                # Epic/GOG/Amazon games launcher (Steam via gaming.nix)
     mangohud              # FPS/CPU/GPU/VRAM overlay — launch opt: `mangohud %command%`
-    youtube-music         # YouTube Music desktop app
+    pear-desktop          # YouTube Music desktop app (was youtube-music, renamed 26.05)
     modrinth-app          # Minecraft mod launcher (Modrinth)
     organicmaps           # offline maps for travellers/hikers/cyclists
     briar-desktop         # P2P encrypted messenger (Tor/Bluetooth/Wi-Fi)
