@@ -108,6 +108,17 @@
 
   environment.variables.EDITOR = "nvim";
 
+  # ---------------------------------------------------------------------------
+  # nix-ld — run generic dynamically-linked executables
+  # ---------------------------------------------------------------------------
+  # Binaries built for ordinary distros ask for /lib64/ld-linux-x86-64.so.2,
+  # which on NixOS is only a stub that errors out. nix-ld puts a real loader
+  # there. Needed by things Nix doesn't package: VS Code extension binaries
+  # (e.g. the Claude Code extension's bundled CLI), language servers, installers.
+  # Pure-glibc binaries work as-is; add libraries to programs.nix-ld.libraries
+  # if something still reports a missing .so.
+  programs.nix-ld.enable = true;
+
   # Unfree packages (vscode, obsidian, steam, …).
   nixpkgs.config.allowUnfree = true;
 
