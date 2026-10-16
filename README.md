@@ -26,37 +26,135 @@ update-artcraft.sh     refresh ArtCraft to latest releases
 
 ## Install (fresh machine, from the NixOS installer)
 
-> **Flakes only see git-tracked files.** This directory must be a git repo with
-> the files at least staged, or the flake ignores them:
-> ```
-> git init && git add -A
-> ```
+Follow these in order. Every command is run **in the NixOS live USB**, in a
+terminal, unless it says otherwise. The config is already validated
+(`nix eval` of the full system passes) and inputs are pinned in `flake.lock`, so
+there are no decisions to make here beyond the disk and the LUKS passphrase.
 
-1. **Confirm the target disk** in `modules/disk.nix` (`device = …`): already set
-   to this laptop's NVMe by its `/dev/disk/by-id/` path. `lsblk` to confirm.
-   ⚠️ disko **erases** that disk. (In a QEMU VM, set `/dev/vda` instead.)
-2. **Partition + encrypt + format + mount** (prompts for the LUKS passphrase):
+**Boot the installer:** insert the NixOS 26.05 **graphical** USB, power on, tap
+**F12** at the Lenovo splash, choose the USB stick. When the desktop loads,
+connect Wi-Fi from the top-right network menu, then open a terminal (Console).
+
+### 1. Clone this repo
+
+It is **private**, so cloning asks for a GitHub login. Use a fine-grained
+Personal Access Token (Contents: read) as the password:
+
+```
+git clone https://github.com/098765434/nixos-config.git
+#   Username: 098765434
+#   Password: <paste your PAT — the github_pat_… string>
+cd nixos-config
+git log --oneline -1
+```
+
+The last command **must** print `9a9deb4 Fix 26.05 eval errors …` (or something
+newer). If it shows anything else, stop — you cloned the wrong revision.
+
+### 2. Confirm the target disk
+
+```
+lsblk
+grep device modules/disk.nix
+```
+
+`device` is preset to this laptop's internal NVMe by its stable
+`/dev/disk/by-id/…` path (a ~238 G WD SN7100S). Confirm `lsblk` shows that same
+disk as the internal one.
+
+> ⚠️ **The next step ERASES that entire disk** — every partition, no prompt,
+> no undo. Make sure anything you need is already backed up elsewhere.
+> On a *different* machine you must edit `device` to match and regenerate
+> `hardware-configuration.nix` (see the note in `modules/disk.nix`).
+
+### 3. Partition, encrypt, format, mount
+
+```
+sudo nix --experimental-features "nix-command flakes" run \
+  github:nix-community/disko/latest -- \
+  --mode destroy,format,mount --flake .#nixos-niri
+```
+
+It prompts you to **set a NEW LUKS passphrase** (typed twice, with no characters
+shown). This becomes the disk-encryption password you enter at **every boot**:
+
+- Choose something strong you will not forget — **there is no recovery** if lost.
+- The boot-time unlock prompt uses a **US-QWERTY** layout, so avoid characters
+  that move around on the Norwegian layout, or you may not be able to retype it.
+
+### 4. Install
+
+```
+sudo nixos-install --flake .#nixos-niri
+```
+
+This builds the whole system (a large first-time download). If it ever fails on
+an ArtCraft app (stale AppImage hash/URL), run `./update-artcraft.sh` and re-run
+the same command.
+
+When it finishes it asks you to set a root password — you can just press Enter
+(root login stays disabled); your user password is handled at first boot below.
+
+### 5. Reboot
+
+```
+reboot
+```
+
+Remove the USB. At boot, enter the LUKS passphrase from step 3. You'll reach the
+**tuigreet** greeter — log in as **`ocbk`** (temporary password: `nixos`),
+session **niri**.
+
+## First boot — finish setup (do these in order)
+
+1. **Set a real password** (replaces the `nixos` default):
    ```
-   sudo nix --experimental-features "nix-command flakes" run \
-     github:nix-community/disko/latest -- \
-     --mode destroy,format,mount --flake .#nixos-niri
+   passwd
    ```
-3. **`hardware-configuration.nix` is already committed** (hand-written for this
-   machine). Optional: regenerate without filesystems (disko owns those) and
-   diff — don't overwrite unless the diff reveals a gap:
+
+2. **Join the tailnet** (needed for the restore below and for Syncthing/rclone):
    ```
-   sudo nixos-generate-config --no-filesystems --root /mnt
-   diff /mnt/etc/nixos/hardware-configuration.nix ./hardware-configuration.nix
+   sudo tailscale up
    ```
-4. **Install**:
+
+3. **Restore the SSH keys + GNOME Connections** saved before the wipe. They live
+   on the `debian` desktop at `~/nixos-migration-YYYYMMDD/`. Because the SSH key
+   you'd need to pull them is *inside* that backup, **push from `debian`** instead
+   of pulling:
    ```
-   sudo nixos-install --flake .#nixos-niri
+   # run ON the debian desktop (enter this machine's new password when asked):
+   scp -r ~/nixos-migration-* ocbk@nixos-niri:~/
    ```
-5. Reboot, enter the LUKS passphrase. Set a real password: `passwd`.
-6. **Real hardware only — TPM2 auto-unlock** (use the LUKS *partition*):
    ```
-   sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/nvme0n1p2
+   # then back on THIS machine:
+   mkdir -p ~/.ssh && chmod 700 ~/.ssh
+   cp ~/nixos-migration-*/ssh/* ~/.ssh/ && chmod 600 ~/.ssh/id_*
+   cp ~/nixos-migration-*/config/connections.db ~/.config/
    ```
+
+4. **Supply the Wi-Fi password** for the declarative profile. It is read from a
+   root-only file that is never in the repo:
+   ```
+   sudo install -m 600 /dev/stdin /etc/nm-secrets.env <<'EOF'
+   HOME_WIFI_PSK=your-actual-wifi-password
+   EOF
+   sudo systemctl restart NetworkManager
+   ```
+
+5. **Verify sync + cloud** (both start automatically):
+   - Syncthing pulls the Obsidian vault from `pi5` — UI at `http://127.0.0.1:8384`.
+   - `~/Cloud` mounts the debian desktop over Tailscale once the SSH key (step 3)
+     is in place: `systemctl status rclone-desktop` should be *active (running)*,
+     and `ls ~/Cloud` should list the desktop's home.
+
+### Optional hardening (once everything works)
+
+- **TPM2 auto-unlock** — unlock the disk without typing the passphrase each boot
+  (the passphrase still works as a fallback). Use the LUKS **partition**:
+  ```
+  sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/nvme0n1p2
+  ```
+- **Secure Boot (lanzaboote)** — full runbook in `modules/security.nix`.
 
 ## Daily use
 
