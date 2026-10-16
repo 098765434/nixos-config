@@ -41,7 +41,7 @@
   # ---------------------------------------------------------------------------
   # Networking
   # ---------------------------------------------------------------------------
-  networking.hostName = "nixos-niri";
+  networking.hostName = "nixos";
   networking.networkmanager = {
     enable = true;
     # Privacy: randomize the Wi-Fi MAC so networks can't track your hardware
