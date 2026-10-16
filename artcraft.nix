@@ -11,13 +11,24 @@ let
   sources = builtins.fromJSON (builtins.readFile ./artcraft-sources.json);
 
   # Build one ArtCraft app from its pinned x86_64 AppImage release asset.
+  # wrapType2 only writes the launcher binary — the AppImage's .desktop file
+  # and icons are extracted separately and copied into $out/share so the apps
+  # show up in XDG app launchers (wofi, etc.).
   mkArtcraft = pname: { version, hash }:
-    pkgs.appimageTools.wrapType2 {
-      inherit pname version;
+    let
       src = pkgs.fetchurl {
         url = "https://github.com/storytold/${pname}/releases/download/v${version}/${pname}-${version}-linux-x86_64.AppImage";
         inherit hash;
       };
+      contents = pkgs.appimageTools.extract { inherit pname version src; };
+    in
+    pkgs.appimageTools.wrapType2 {
+      inherit pname version src;
+      extraInstallCommands = ''
+        mkdir -p $out/share
+        cp -r ${contents}/usr/share/applications $out/share/
+        cp -r ${contents}/usr/share/icons        $out/share/
+      '';
       # If an app complains about a missing library at runtime, add it here, e.g.:
       # extraPkgs = p: [ p.libGL p.vulkan-loader ];
     };
