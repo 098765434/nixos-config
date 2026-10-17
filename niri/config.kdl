@@ -36,7 +36,7 @@ output "eDP-1" {
 layout {
     empty-workspace-above-first
     gaps 4
-    background-color "#000000"
+    background-color "#00000000"
     center-focused-column "never"
     preset-column-widths {
         proportion 0.33333
@@ -69,7 +69,7 @@ layout {
 }
 
 overview {
-    backdrop-color "#000000"
+    backdrop-color "#00000000"
 }
 
 // --- Autostart ---------------------------------------------------------------
@@ -82,6 +82,10 @@ overview {
 
 // Status bar.
 spawn-at-startup "waybar"
+
+// Wallpaper: solid black normally, swap to an image while overview is open.
+// Set OVERVIEW_WALLPAPER env var (or edit the script) to pick the image.
+spawn-sh-at-startup "~/nixos-config/scripts/overview-wallpaper.sh"
 
 // Network tray applet.
 spawn-at-startup "nm-applet" "--indicator"
