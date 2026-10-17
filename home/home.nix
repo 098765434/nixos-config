@@ -15,15 +15,21 @@
 
   home.stateVersion = "26.05";
 
-  # niri config (validated by the niri-flake module). Source of truth is the
-  # KDL file in the repo; this reads it verbatim.
-  programs.niri.config = builtins.readFile ../niri/config.kdl;
-
-  # waybar — ship the raw config (adapted from mechakotik/dots) as-is.
-  xdg.configFile = {
-    "waybar/config".source = ../waybar/config;
-    "waybar/style.css".source = ../waybar/style.css;
-  };
+  # niri + waybar configs are symlinked straight at the repo working tree so
+  # edits take effect without a rebuild (niri auto-reloads config.kdl on save;
+  # reload waybar with `pkill -SIGUSR2 waybar`). Trade-off vs. the previous
+  # `programs.niri.config = readFile ...` setup: niri-flake no longer parses
+  # the KDL at build time, so bad syntax surfaces at reload instead of rebuild.
+  # The symlink target is absolute — the repo must live at ~/nixos-config.
+  xdg.configFile."niri/config.kdl".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/nixos-config/niri/config.kdl";
+  xdg.configFile."waybar/config".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/nixos-config/waybar/config";
+  xdg.configFile."waybar/style.css".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/nixos-config/waybar/style.css";
 
   # --- XDG user directories ---
   # niri has no desktop environment to run xdg-user-dirs, so nothing would create
