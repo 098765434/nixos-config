@@ -3,11 +3,16 @@
 
 {
   # niri compositor — installs it, registers the Wayland session, wires polkit
-  # + portals. Module + package come from niri-flake (see flake.nix), which also
-  # enables niri's binary cache so it isn't compiled locally. The module already
-  # defaults the package to niri-stable, so enable is all we need. Your niri
-  # config.kdl is managed per-user in ./home via niri-flake's home-manager module.
-  programs.niri.enable = true;
+  # + portals. Module comes from niri-flake (see flake.nix). The package is
+  # pulled from nixpkgs rather than niri-flake's `niri-stable`: niri-flake has
+  # been slow to bump that pin (still v25.08 as of writing) while nixpkgs
+  # 26.05 already ships the latest upstream release. Trade-off: we lose
+  # niri.cachix.org for this build, but cache.nixos.org has it prebuilt.
+  # Your niri config.kdl is managed per-user in ./home via a mkOutOfStoreSymlink.
+  programs.niri = {
+    enable = true;
+    package = pkgs.niri;
+  };
 
   # greetd + tuigreet: tiny TTY greeter that lists sessions (pick "niri").
   services.greetd = {
@@ -69,5 +74,10 @@
     nerd-fonts.jetbrains-mono
     nerd-fonts.mononoki
     atkinson-hyperlegible-mono # used by the waybar style.css
+    atkinson-hyperlegible-next
+    # Google's github.com/google/material-design-icons — classic Material Icons
+    # plus the newer variable-font Material Symbols.
+    material-icons
+    material-symbols
   ];
 }
