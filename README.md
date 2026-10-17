@@ -17,8 +17,8 @@ modules/
   services.nix         tailscale, ssh, avahi, gvfs, gnome-keyring
   apps.nix             system packages
 home/home.nix          home-manager: niri/waybar/foot/wofi/mako/hypridle/direnv
-niri/config.kdl        niri config (validated via niri-flake HM module)
-waybar/                waybar config + style (adapted from mechakotik/dots)
+niri/config.kdl        niri config (symlinked into ~/.config via mkOutOfStoreSymlink — edit live, no rebuild)
+waybar/                waybar config + style (also symlinked live; adapted from mechakotik/dots)
 artcraft.nix           ArtCraft apps (vectorcraft/figcraft/photocraft/designcraft)
 artcraft-sources.json  pinned ArtCraft versions + hashes
 update-artcraft.sh     refresh ArtCraft to latest releases
