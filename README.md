@@ -169,6 +169,8 @@ nix develop                                       # Rust/JDK dev shell (or via d
 ./update-artcraft.sh                              # bump ArtCraft apps to latest
 ```
 
+See [CHEATSHEET.md](CHEATSHEET.md) for rollback, hot-reload, GC, installing from GitHub, and other common operations.
+
 Zen browser (not in nixpkgs) via Flatpak after first boot:
 ```
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
