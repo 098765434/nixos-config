@@ -7,6 +7,8 @@
 // A few host-specific lines are disabled with KDL's "/-" node-comment and
 // marked NIXOS-NOTE.
 
+prefer-no-csd
+
 input {
     keyboard {
         xkb {
