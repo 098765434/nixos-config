@@ -36,7 +36,7 @@ output "eDP-1" {
 layout {
     empty-workspace-above-first
     gaps 4
-    background-color "#00000000"
+    background-color "#000000"
     center-focused-column "never"
     preset-column-widths {
         proportion 0.33333
@@ -69,7 +69,7 @@ layout {
 }
 
 overview {
-    backdrop-color "#00000000"
+    backdrop-color "#000000"
 }
 
 // --- Autostart ---------------------------------------------------------------
@@ -83,9 +83,10 @@ overview {
 // Status bar.
 spawn-at-startup "waybar"
 
-// Wallpaper: solid black normally, swap to an image while overview is open.
-// Set OVERVIEW_WALLPAPER env var (or edit the script) to pick the image.
-spawn-sh-at-startup "~/nixos-config/scripts/overview-wallpaper.sh"
+// Overview backdrop wallpaper: swww renders on a dedicated layer-shell
+// namespace that the layer-rule below pins inside the overview backdrop.
+spawn-sh-at-startup "swww-daemon --namespace overview-bg"
+spawn-sh-at-startup "sleep 1 && swww img --namespace overview-bg ~/Pictures/overview.jpg"
 
 // Network tray applet.
 spawn-at-startup "nm-applet" "--indicator"
@@ -114,6 +115,11 @@ window-rule {
 window-rule {
     geometry-corner-radius 8
     clip-to-geometry true
+}
+
+layer-rule {
+    match namespace="^overview-bg$"
+    place-within-backdrop true
 }
 
 layer-rule {
