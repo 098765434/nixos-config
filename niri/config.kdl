@@ -85,8 +85,8 @@ spawn-at-startup "waybar"
 
 // Overview backdrop wallpaper: swww renders on a dedicated layer-shell
 // namespace that the layer-rule below pins inside the overview backdrop.
-spawn-sh-at-startup "swww-daemon --namespace overview-bg"
-spawn-sh-at-startup "sleep 1 && swww img --namespace overview-bg ~/Pictures/overview.jpg"
+spawn-sh-at-startup "awww-daemon --namespace overview-bg"
+spawn-sh-at-startup "sleep 1 && awww img --namespace overview-bg ~/Pictures/overview.jpg"
 
 // Network tray applet.
 spawn-at-startup "nm-applet" "--indicator"

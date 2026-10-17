@@ -8,7 +8,7 @@
     wofi             # launcher (Mod+D)
     # swaylock is provided by home-manager (programs.swaylock) with its config
     waybar           # status bar
-    swww             # wallpaper daemon (used for niri overview backdrop)
+    awww             # wallpaper daemon (used for niri overview backdrop; formerly swww)
     hypridle         # idle management (needs a hypridle.conf to act)
     playerctl        # media keys
     brightnessctl    # brightness keys
