@@ -4,7 +4,8 @@
 @define-color background-alt #31363b;
 
 * {
-    font-family: Mononoki Nerd Font;
+    font-family: "Atkinson Hyperlegible Mono";
+    font-weight: 600;
     font-size: 13px;
     padding: 0;
     margin: 0;
@@ -17,17 +18,13 @@
 }
 
 #workspaces button {
-    padding-left: 1em;
-    padding-right: 1.3em;
-}
-
-#workspaces button.empty {
-    color: @foreground-inactive;
+    padding: 0;
+    min-width: 18px;
+    margin: 0 2px;
 }
 
 #workspaces button.active {
-    background-color: @background-alt;
-    border-radius: 3px;
+    color: #fff;
 }
 
 #wireplumber,
@@ -35,7 +32,6 @@
 #tray,
 #usage,
 #net {
-    background-color: @background-alt;
     border-radius: 3px;
     padding-left: 0.5em;
     padding-right: 0.5em;

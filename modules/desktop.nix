@@ -67,6 +67,7 @@
     noto-fonts
     noto-fonts-color-emoji     # was noto-fonts-emoji (renamed in 26.05)
     nerd-fonts.jetbrains-mono
-    nerd-fonts.mononoki        # used by the waybar style.css
+    nerd-fonts.mononoki
+    atkinson-hyperlegible-mono # used by the waybar style.css
   ];
 }
