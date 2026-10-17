@@ -1,5 +1,5 @@
 {
-  "vectorcraft": { "version": "0.11.0", "hash": "sha256-CrUSb5svlZG8J6EOIOobLyOThLGhb+yIKI7T3m2/gxw=" },
+  "vectorcraft": { "version": "0.12.0", "hash": "sha256-0LnEHzdUKX98aJL3Ep24j0Hn5xjkUteV08HE6ePrRIs=" },
   "figcraft": { "version": "0.6.0", "hash": "sha256-YA8RXdxtnnXwcgwNnFRJwVsz/eJ24IDwE7tEntHaRVM=" },
   "photocraft": { "version": "0.9.0", "hash": "sha256-SDqaeSAODAhku1TPP6pqVeK3nBQz2s/LFT04YuePMrw=" },
   "designcraft": { "version": "0.8.0", "hash": "sha256-iNV3EPVsn7fY4z4EYGHv+DkReXG0AqQQPEszK1yjtd8=" }
