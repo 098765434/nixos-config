@@ -83,11 +83,6 @@ overview {
 // Status bar.
 spawn-at-startup "waybar"
 
-// Overview backdrop wallpaper: swww renders on a dedicated layer-shell
-// namespace that the layer-rule below pins inside the overview backdrop.
-spawn-sh-at-startup "awww-daemon --namespace overview-bg"
-spawn-sh-at-startup "sleep 1 && awww img --namespace overview-bg ~/Pictures/overview.jpg"
-
 // Network tray applet.
 spawn-at-startup "nm-applet" "--indicator"
 
@@ -115,11 +110,6 @@ window-rule {
 window-rule {
     geometry-corner-radius 8
     clip-to-geometry true
-}
-
-layer-rule {
-    match namespace="^overview-bg$"
-    place-within-backdrop true
 }
 
 layer-rule {
