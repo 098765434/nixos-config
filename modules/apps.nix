@@ -1,8 +1,8 @@
 # System-wide packages. (Unfree is allowed in configuration.nix.)
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 {
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = (with pkgs; [
     # --- niri session companions (referenced by niri config.kdl) ---
     foot             # terminal (Mod+Return / Mod+T)
     wofi             # launcher (Mod+D)
@@ -75,5 +75,12 @@
 
     # --- hardware helpers ---
     ddcutil               # external-monitor brightness over DDC/CI
+  ]) ++ [
+    # amane: Rust Wayland shell framework. The user shell lives at
+    # ~/.config/amane and is rebuilt by `amane dev` on save — no nixos-rebuild
+    # needed to iterate on the shell itself. Installed from the pinned flake
+    # input (see flake.nix); the wrapper bundles the Rust toolchain + native
+    # libs so the CLI can build the shell on its own.
+    inputs.amane.packages.${pkgs.system}.default
   ];
 }

@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "amane": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792140988,
+        "narHash": "sha256-z+na5unekDYqbn1heT+2xk3Flh11bpr5oMhmhOEhBW8=",
+        "owner": "MystiaFin",
+        "repo": "amane",
+        "rev": "72e23ebdb6b7692e78a28d7e2662094bf0e780b1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "MystiaFin",
+        "repo": "amane",
+        "type": "github"
+      }
+    },
     "crane": {
       "locked": {
         "lastModified": 1731098351,
@@ -290,6 +310,7 @@
     },
     "root": {
       "inputs": {
+        "amane": "amane",
         "disko": "disko",
         "home-manager": "home-manager",
         "lanzaboote": "lanzaboote",

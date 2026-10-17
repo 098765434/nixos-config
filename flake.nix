@@ -30,9 +30,17 @@
       url = "github:nix-community/lanzaboote/v0.4.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # amane: Rust framework for building Wayland desktop shells. The CLI is
+    # wrapped with its own Rust toolchain + wayland/pam/vulkan libs, so it can
+    # rebuild the user shell at ~/.config/amane without a nixos-rebuild.
+    amane = {
+      url = "github:MystiaFin/amane";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, disko, niri, lanzaboote, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, disko, niri, lanzaboote, amane, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
