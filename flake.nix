@@ -38,9 +38,20 @@
       url = "github:MystiaFin/amane";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # niri fork with live gesture-progress IPC events (see the fork's
+    # niri-gesture-ipc-spec.md). Built from local source via the fork's own
+    # flake (buildRustPackage with cargoLock), and used as programs.niri.package
+    # in modules/desktop.nix. Only committed changes on the fork are picked up:
+    # commit on the fork before `nixos-rebuild`. Follows our nixpkgs so it builds
+    # against the same package set as the rest of the system.
+    niri-fork = {
+      url = "git+file:///home/ocbk/Projects/desktop/niri-fork";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, disko, niri, lanzaboote, amane, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, disko, niri, lanzaboote, amane, niri-fork, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};

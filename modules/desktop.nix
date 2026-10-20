@@ -1,17 +1,18 @@
 # niri desktop: compositor, greeter, portals, polkit, app integration, fonts.
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
   # niri compositor — installs it, registers the Wayland session, wires polkit
-  # + portals. Module comes from niri-flake (see flake.nix). The package is
-  # pulled from nixpkgs rather than niri-flake's `niri-stable`: niri-flake has
-  # been slow to bump that pin (still v25.08 as of writing) while nixpkgs
-  # 26.05 already ships the latest upstream release. Trade-off: we lose
-  # niri.cachix.org for this build, but cache.nixos.org has it prebuilt.
+  # + portals. Module comes from niri-flake (see flake.nix). The package is our
+  # local fork (inputs.niri-fork), which adds live gesture-progress IPC events
+  # on top of the v26.04 base that matches nixpkgs 26.05's niri. Built from the
+  # fork's own flake (buildRustPackage), so this compiles niri locally — no
+  # cache.nixos.org hit — and only COMMITTED changes on the fork are built.
+  # Revert to upstream by setting `package = pkgs.niri;`.
   # Your niri config.kdl is managed per-user in ./home via a mkOutOfStoreSymlink.
   programs.niri = {
     enable = true;
-    package = pkgs.niri;
+    package = inputs.niri-fork.packages.${pkgs.system}.niri;
   };
 
   # greetd + tuigreet: tiny TTY greeter that lists sessions (pick "niri").
