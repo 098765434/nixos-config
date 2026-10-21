@@ -20,6 +20,27 @@
         "type": "github"
       }
     },
+    "amane-shell": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay"
+      },
+      "locked": {
+        "lastModified": 1792541203,
+        "narHash": "sha256-EKbXSneiYYMEBCgTzVUdHA94h/NWKTYCfiu9EymKERQ=",
+        "owner": "098765434",
+        "repo": "amane-shell",
+        "rev": "bda23e4afc52569d526f5ff23db5bd825fa505af",
+        "type": "github"
+      },
+      "original": {
+        "owner": "098765434",
+        "repo": "amane-shell",
+        "type": "github"
+      }
+    },
     "crane": {
       "locked": {
         "lastModified": 1731098351,
@@ -144,7 +165,7 @@
           "nixpkgs"
         ],
         "pre-commit-hooks-nix": "pre-commit-hooks-nix",
-        "rust-overlay": "rust-overlay"
+        "rust-overlay": "rust-overlay_2"
       },
       "locked": {
         "lastModified": 1737639419,
@@ -189,20 +210,21 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_2"
+        "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1792511142,
-        "narHash": "sha256-NxZc8Fwizu1Kfh0Hdeykc7IixeuOhv+sWs+nglTvl2A=",
-        "ref": "refs/heads/gesture-ipc-events",
-        "rev": "9366e5125e696c5878a236d2183e6cd175a237ba",
-        "revCount": 4,
-        "type": "git",
-        "url": "file:///home/ocbk/Projects/desktop/niri-fork"
+        "lastModified": 1792542241,
+        "narHash": "sha256-YmFBvaNqFV6VPfDliD/nh5bEG2KPe0yVLyEcJW/KnZ0=",
+        "owner": "098765434",
+        "repo": "niri",
+        "rev": "8fd4e23e4c88034777d0da8ad0704dfc10fe1634",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/ocbk/Projects/desktop/niri-fork"
+        "owner": "098765434",
+        "ref": "ocbk",
+        "repo": "niri",
+        "type": "github"
       }
     },
     "niri-stable": {
@@ -332,6 +354,7 @@
     "root": {
       "inputs": {
         "amane": "amane",
+        "amane-shell": "amane-shell",
         "disko": "disko",
         "home-manager": "home-manager",
         "lanzaboote": "lanzaboote",
@@ -341,6 +364,27 @@
       }
     },
     "rust-overlay": {
+      "inputs": {
+        "nixpkgs": [
+          "amane-shell",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792480937,
+        "narHash": "sha256-arni7i+yH5ZnkvAN9UotvhMml5+fZyXcMHpiOvI3WFY=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "5424e1e6dda30b0626935d2a03a6526db4858d60",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_2": {
       "inputs": {
         "nixpkgs": [
           "lanzaboote",
@@ -361,7 +405,7 @@
         "type": "github"
       }
     },
-    "rust-overlay_2": {
+    "rust-overlay_3": {
       "inputs": {
         "nixpkgs": [
           "niri-fork",

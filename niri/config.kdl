@@ -9,6 +9,16 @@
 
 prefer-no-csd
 
+// Global blur backend tune. The `background-effect { blur true }` block
+// inside layer/window rules enables blur per-surface; this section
+// controls the shared dual-Kawase pipeline.
+blur {
+    passes 4
+    offset 2
+    noise 0.02
+    saturation 1.5
+}
+
 input {
     keyboard {
         xkb {
@@ -83,8 +93,10 @@ overview {
 // NOTE: hypridle (idle) and mako (notifications) are run as home-manager user
 // services (see home/home.nix), so they're NOT spawned here.
 
-// Status bar.
-spawn-at-startup "waybar"
+// Status bar. Replaced by the amane taskbar (components/taskbar); waybar is
+// disabled so the two don't both reserve the bottom edge. Re-enable by
+// removing the `/-` if you want waybar back.
+/-spawn-at-startup "waybar"
 
 // Network tray applet.
 spawn-at-startup "nm-applet" "--indicator"
@@ -124,6 +136,39 @@ layer-rule {
     }
 }
 
+// amane context menu — the anchor is an invisible 1×1 layer-surface. All the
+// visible card UI (main menu, submenu, nested submenus) is rendered as
+// xdg-popups of this anchor; the `popups {}` block below styles every one
+// of them uniformly with compositor-side blur + shadow.
+layer-rule {
+    match namespace="^amane\\.context-menu-anchor$"
+
+    popups {
+        geometry-corner-radius 10
+        background-effect {
+            blur true
+        }
+    }
+}
+
+// amane taskbar — a full-width bottom bar. Frosted translucent material via
+// compositor-side blur behind its (semi-transparent) surface.
+layer-rule {
+    match namespace="^amane\\.taskbar$"
+    background-effect {
+        blur true
+    }
+}
+
+// amane WiFi panel — a rounded frosted card anchored bottom-right.
+layer-rule {
+    match namespace="^amane\\.taskbar\\.wifi$"
+    geometry-corner-radius 14
+    background-effect {
+        blur true
+    }
+}
+
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
@@ -152,6 +197,10 @@ binds {
 
     XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
     XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
+
+    // Amane context menu: arm the fullscreen hit-catcher, then right-click
+    // anywhere to open the menu (or Esc / left-click to cancel).
+    Mod+Shift+M hotkey-overlay-title="Arm Context Menu" { spawn-sh "printf 'arm\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock"; }
 
     Mod+O repeat=false { toggle-overview; }
     Mod+Q repeat=false { close-window; }

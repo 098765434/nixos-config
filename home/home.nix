@@ -151,6 +151,28 @@
     };
   };
 
+  # --- Bar: amane-shell (custom niri taskbar) ---
+  # Installed from the flake input and run as a user service bound to the niri
+  # graphical session, so it starts on login and restarts on crash (logs via
+  # `journalctl --user -u amane-shell`) — mirrors the mako/hypridle pattern and
+  # replaces a niri `spawn-at-startup`. Default theme is dark; to switch, add
+  # Environment = [ "AMANE_THEME=light" ] to Service below.
+  # The bar's blur/rounding also needs its niri layer-rules: run
+  # `~/Projects/desktop/shell/gen-layer-rules.sh ~/nixos-config/niri/config.kdl`.
+  home.packages = [ inputs.amane-shell.packages.${pkgs.system}.default ];
+  systemd.user.services.amane-shell = {
+    Unit = {
+      Description = "amane-shell bar";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${inputs.amane-shell.packages.${pkgs.system}.default}/bin/amane-shell";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
   # --- direnv + nix-direnv: auto-load the flake devShell per project ---
   programs.direnv = {
     enable = true;

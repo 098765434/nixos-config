@@ -40,13 +40,22 @@
     };
 
     # niri fork with live gesture-progress IPC events (see the fork's
-    # niri-gesture-ipc-spec.md). Built from local source via the fork's own
-    # flake (buildRustPackage with cargoLock), and used as programs.niri.package
-    # in modules/desktop.nix. Only committed changes on the fork are picked up:
-    # commit on the fork before `nixos-rebuild`. Follows our nixpkgs so it builds
-    # against the same package set as the rest of the system.
+    # niri-gesture-ipc-spec.md). A public GitHub fork of YaLTeR/niri; used as
+    # programs.niri.package in modules/desktop.nix. Pinned to the fork branch —
+    # bump with `nix flake update niri-fork`. For local hacking, override with
+    # `--override-input niri-fork path:$HOME/Projects/desktop/niri`. Follows our
+    # nixpkgs so it builds against the same package set as the rest of the system.
     niri-fork = {
-      url = "git+file:///home/ocbk/Projects/desktop/niri-fork";
+      url = "github:098765434/niri/ocbk";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # amane-shell: the custom Wayland bar (depends on the amane fork via a git
+    # dependency). Installed + run as a systemd user service in ./home/home.nix.
+    # Bump with `nix flake update amane-shell`; local override:
+    # `--override-input amane-shell path:$HOME/Projects/desktop/shell`.
+    amane-shell = {
+      url = "github:098765434/amane-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
