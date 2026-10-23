@@ -136,10 +136,15 @@ layer-rule {
     }
 }
 
-// amane context menu — the anchor is an invisible 1×1 layer-surface. All the
-// visible card UI (main menu, submenu, nested submenus) is rendered as
-// xdg-popups of this anchor; the `popups {}` block below styles every one
-// of them uniformly with compositor-side blur + shadow.
+// >>> amane layer-rules (generated from shell/niri-layer-rule.kdl — do not edit by hand)
+// Taskbar: a full-width bottom bar. It is deliberately NOT blurred — only the
+// floating surfaces (menus and the Wi-Fi and power cards) are frosted.
+// (No layer-rule for `amane.taskbar` on purpose.)
+
+// Context menu. The anchor is an invisible 1×1 layer-surface; the visible
+// cards (menu + nested submenus) are xdg-popups of it, so the `popups {}`
+// block styles every level uniformly. Namespaces: the anchor is
+// `amane.context-menu-anchor`; each depth level is `amane.context-menu.0`..`7`.
 layer-rule {
     match namespace="^amane\\.context-menu-anchor$"
 
@@ -151,23 +156,28 @@ layer-rule {
     }
 }
 
-// amane taskbar — a full-width bottom bar. Frosted translucent material via
-// compositor-side blur behind its (semi-transparent) surface.
+// Wi-Fi panel: a rounded frosted card anchored bottom-right, toggled by the
+// taskbar's network indicator.
 layer-rule {
-    match namespace="^amane\\.taskbar$"
+    match namespace="^amane\\.taskbar\\.wifi$"
+    geometry-corner-radius 10
     background-effect {
         blur true
+        xray false
     }
 }
 
-// amane WiFi panel — a rounded frosted card anchored bottom-right.
+// Power panel: the same frosted card, toggled by the taskbar's battery
+// indicator.
 layer-rule {
-    match namespace="^amane\\.taskbar\\.wifi$"
-    geometry-corner-radius 14
+    match namespace="^amane\\.taskbar\\.power$"
+    geometry-corner-radius 10
     background-effect {
         blur true
+        xray false
     }
 }
+// <<< amane layer-rules
 
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
