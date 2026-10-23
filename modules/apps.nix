@@ -33,7 +33,6 @@
 
     # --- desktop essentials ---
     hyprpolkitagent  # polkit agent (run by the systemd service in desktop.nix)
-    mako             # notification daemon (spawned in niri config)
     grim             # screenshot capture backend
     wtype            # synthetic keyboard input (Wayland)
     cava             # audio visualizer

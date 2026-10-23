@@ -94,18 +94,9 @@
     '';
   };
 
-  # --- Notifications: mako (replaces the niri `spawn-at-startup "mako"`) ---
-  services.mako = {
-    enable = true;
-    settings = {
-      font = "JetBrainsMono Nerd Font 10";
-      default-timeout = 5000;
-      background-color = "#232629";
-      text-color = "#eff0f1";
-      border-color = "#7fc8ff";
-      border-radius = 8;
-    };
-  };
+  # --- Notifications: amane-shell ---
+  # The bar below is the notification daemon (toasts, center, Do Not Disturb),
+  # so mako is gone: only one program can own org.freedesktop.Notifications.
 
   # --- Idle: hypridle (ported from ~/.config/hypridle on Arch) ---
   # Replaces the niri `spawn-at-startup "hypridle"`.
@@ -154,7 +145,7 @@
   # --- Bar: amane-shell (custom niri taskbar) ---
   # Installed from the flake input and run as a user service bound to the niri
   # graphical session, so it starts on login and restarts on crash (logs via
-  # `journalctl --user -u amane-shell`) — mirrors the mako/hypridle pattern and
+  # `journalctl --user -u amane-shell`) — mirrors the hypridle pattern and
   # replaces a niri `spawn-at-startup`. Default theme is dark; to switch, add
   # Environment = [ "AMANE_THEME=light" ] to Service below.
   # The bar's blur/rounding also needs its niri layer-rules: run

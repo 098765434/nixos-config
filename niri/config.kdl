@@ -90,8 +90,9 @@ overview {
 // yet packaged for NixOS, so this spawn is disabled. Re-enable once packaged.
 /-spawn-at-startup "amane" "run"
 
-// NOTE: hypridle (idle) and mako (notifications) are run as home-manager user
-// services (see home/home.nix), so they're NOT spawned here.
+// NOTE: hypridle (idle) and the amane-shell bar (which is also the notification
+// daemon) are run as home-manager user services (see home/home.nix), so they're
+// NOT spawned here.
 
 // Status bar. Replaced by the amane taskbar (components/taskbar); waybar is
 // disabled so the two don't both reserve the bottom edge. Re-enable by
@@ -175,6 +176,63 @@ layer-rule {
     background-effect {
         blur true
         xray false
+    }
+}
+
+// Bluetooth panel: the same frosted card, toggled by the taskbar's Bluetooth
+// indicator. Its device menu is an xdg-popup of this surface, frosted like the others.
+layer-rule {
+    match namespace="^amane\\.taskbar\\.bluetooth$"
+    geometry-corner-radius 10
+    background-effect {
+        blur true
+        xray false
+    }
+
+    popups {
+        geometry-corner-radius 10
+        background-effect {
+            blur true
+        }
+    }
+}
+
+// Sound panel: the same frosted card, toggled by the taskbar's volume pill.
+layer-rule {
+    match namespace="^amane\\.taskbar\\.audio$"
+    geometry-corner-radius 10
+    background-effect {
+        blur true
+        xray false
+    }
+}
+
+// Notification toasts: one surface per banner, sized to its card, sliding in
+// at the top-right.
+layer-rule {
+    match namespace="^amane\\.notifications\\.toast$"
+    geometry-corner-radius 16
+    background-effect {
+        blur true
+        xray false
+    }
+}
+
+// Notification center: a full-height frosted sidebar at the right edge,
+// opened from the clock. Its Do Not Disturb menu is an xdg-popup of it.
+layer-rule {
+    match namespace="^amane\\.notifications\\.center$"
+    geometry-corner-radius 10
+    background-effect {
+        blur true
+        xray false
+    }
+
+    popups {
+        geometry-corner-radius 10
+        background-effect {
+            blur true
+        }
     }
 }
 // <<< amane layer-rules

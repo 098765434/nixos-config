@@ -57,7 +57,7 @@ sudo nixos-rebuild switch --flake .#nixos-niri
 |---|---|---|
 | niri | `niri/config.kdl` | automatic on save |
 | waybar | `waybar/config`, `waybar/style.css` | `pkill -SIGUSR2 waybar` |
-| mako | HM-managed via `home.nix` | needs rebuild |
+| amane-shell (bar + notifications) | HM-managed via `home.nix` | needs rebuild |
 | hypridle, swaylock, foot, wofi | HM-managed | needs rebuild |
 
 The niri/waybar files are `mkOutOfStoreSymlink`'d at the repo, so editing
@@ -151,5 +151,5 @@ folder, not the toolbar — open `Ctrl+Shift+O` to find them.
 
 ```sh
 niri validate ~/.config/niri/config.kdl
-systemctl --user status hyprpolkitagent mako hypridle
+systemctl --user status hyprpolkitagent amane-shell hypridle
 ```
