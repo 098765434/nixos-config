@@ -164,6 +164,22 @@
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
+  # --- Wallpaper: swaybg on niri's background layer ---
+  # A background layer surface is also what niri's xray blur shows behind the
+  # bar's frosted panels. Change the picture here and rebuild.
+  systemd.user.services.wallpaper = {
+    Unit = {
+      Description = "Desktop wallpaper (swaybg)";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.swaybg}/bin/swaybg -m fill -i ${config.home.homeDirectory}/Pictures/overview.jpg";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
   # --- direnv + nix-direnv: auto-load the flake devShell per project ---
   programs.direnv = {
     enable = true;
