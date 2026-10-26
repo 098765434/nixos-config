@@ -47,8 +47,9 @@ output "eDP-1" {
 
 layout {
     empty-workspace-above-first
-    gaps 4
-    background-color "#000000"
+    gaps 0
+    // Transparent so the backdrop wallpaper (layer-rule below) shows through.
+    background-color "transparent"
     center-focused-column "never"
     preset-column-widths {
         proportion 0.33333
@@ -63,10 +64,10 @@ layout {
         inactive-color "#505050"
     }
     border {
-        off
+        //off
         width 4
-        active-color "#ffc87f"
-        inactive-color "#505050"
+        active-color "#000"
+        inactive-color "#000"
         urgent-color "#9b0000"
     }
     shadow {
@@ -76,13 +77,23 @@ layout {
         color "#0007"
     }
     struts {
-        bottom -4
-        top  -4
+        //bottom -4
+        //top  -4
     }
 }
 
 overview {
     backdrop-color "#000000"
+    workspace-shadow {
+        off
+    }
+}
+
+// Move the swaybg wallpaper (home.nix) into the backdrop, so it also shows
+// behind the overview. It stays put while workspaces slide over it.
+layer-rule {
+    match namespace="^wallpaper$"
+    place-within-backdrop true
 }
 
 // --- Autostart ---------------------------------------------------------------
@@ -94,7 +105,7 @@ overview {
 // daemon) are run as home-manager user services (see home/home.nix), so they're
 // NOT spawned here.
 
-// Status bar. Replaced by the amane taskbar (components/taskbar); waybar is
+// Status bar. Replaced by the amane status bar (components/status_bar); waybar is
 // disabled so the two don't both reserve the bottom edge. Re-enable by
 // removing the `/-` if you want waybar back.
 /-spawn-at-startup "waybar"
@@ -118,32 +129,33 @@ window-rule {
     // Zen (Firefox-based) picture-in-picture player floats by default.
     match app-id=r#"^app\.zen_browser\.zen$"# title="^Picture-in-Picture$"
     open-floating true
+    
 }
 
 window-rule {
     geometry-corner-radius 8
     clip-to-geometry true
-}
-
-layer-rule {
-    match namespace="^amane-launcher$"
-    geometry-corner-radius 22
-    /-background-effect {
-        blur true
-        xray false
-    }
+    
 }
 
 // >>> amane layer-rules (generated from shell/niri-layer-rule.kdl — do not edit by hand)
-// Taskbar: only its xdg-popups (tooltips, a window's menu) are frosted; the
-// bar itself is deliberately NOT blurred.
+// Status bar: one uniform frosted strip along the bottom, macOS 27's toolbar:
+// frost, the standard material without a lens. It reserves its zone, so only
+// the wallpaper is behind it and niri's xray blur is enough. Its xdg-popups
+// (tooltips, Do Not Disturb's menu) are frosted cards.
 layer-rule {
-    match namespace="^amane\\.taskbar$"
+    match namespace="^amane\\.status-bar$"
+    geometry-corner-radius 0
+    background-effect {
+        blur true
+        material "frost"
+    }
 
     popups {
         geometry-corner-radius 10
         background-effect {
             blur true
+            material "glass"
         }
     }
 }
@@ -159,13 +171,14 @@ layer-rule {
         geometry-corner-radius 10
         background-effect {
             blur true
+            material "glass"
         }
     }
 }
 
 // Quick Settings: a clear surface whose modules are frosted one by one, the
-// surface saying where (ext-background-effect). Toggled by the taskbar's
-// Control Center button. A Bluetooth device's menu is an xdg-popup of it.
+// surface saying where (ext-background-effect). Toggled by the status bar's
+// Quick Settings button. A Bluetooth device's menu is an xdg-popup of it.
 layer-rule {
     match namespace="^amane\\.quick-settings$"
     background-effect {
@@ -176,48 +189,175 @@ layer-rule {
         geometry-corner-radius 10
         background-effect {
             blur true
+            material "glass"
         }
     }
 }
 
-// Notification toasts: one surface per banner, sized to its card, sliding in
-// at the top-right.
+// Dock: a clear surface over the bar, one a monitor, whose card is frosted
+// where the surface says (ext-background-effect). It comes up from the
+// bottom edge; a window's menu is an xdg-popup of it.
 layer-rule {
-    match namespace="^amane\\.notifications\\.toast$"
-    geometry-corner-radius 16
+    match namespace="^amane\\.dock$"
     background-effect {
-        blur true
         xray false
-    }
-    shadow {
-        on
-        softness 16
-        offset x=0 y=8
-        color "#00000073"
-    }
-}
-
-// Notification center: a full-height frosted sidebar at the right edge,
-// opened from the clock. Its Do Not Disturb menu is an xdg-popup of it.
-layer-rule {
-    match namespace="^amane\\.notifications\\.center$"
-    geometry-corner-radius 10
-    background-effect {
-        blur true
-        xray false
-    }
-    shadow {
-        on
-        softness 16
-        offset x=0 y=8
-        color "#00000073"
     }
 
     popups {
         geometry-corner-radius 10
         background-effect {
             blur true
+            material "glass"
         }
+    }
+}
+
+// Launcher: a clear surface over the output whose glass panel, in the middle,
+// is frosted where the surface says (ext-background-effect). Toggled over IPC
+// from a keybind. An app's menu is an xdg-popup of it.
+layer-rule {
+    match namespace="^amane\\.launcher$"
+    background-effect {
+        xray false
+    }
+
+    popups {
+        geometry-corner-radius 10
+        background-effect {
+            blur true
+            material "glass"
+        }
+    }
+}
+
+// Notification toasts: one surface per banner, sized to its card, sliding in
+// at the top-right. Each frosts its card itself (blur shapes, in the glass
+// material); the rule rounds it and gives it niri's shadow.
+layer-rule {
+    match namespace="^amane\\.notifications\\.toast$"
+    geometry-corner-radius 16
+    shadow {
+        on
+        softness 16
+        offset x=0 y=8
+        color "#00000073"
+    }
+    background-effect {
+        xray false
+    }
+}
+
+// Notification center: a full-height glass sidebar at the right edge, opened
+// from the clock, frosting itself (blur shapes, in the glass material); the
+// rule rounds it and gives it niri's shadow. Its Do Not Disturb menu is an
+// xdg-popup of it.
+layer-rule {
+    match namespace="^amane\\.notifications\\.center$"
+    geometry-corner-radius 26
+    shadow {
+        on
+        softness 16
+        offset x=0 y=8
+        color "#00000073"
+    }
+    background-effect {
+        xray false
+    }
+
+    popups {
+        geometry-corner-radius 10
+        background-effect {
+            blur true
+            material "glass"
+        }
+    }
+}
+
+// An amane app's windows: frosted behind, the window drawing its own tint
+// over the frost (the window material), and its popups like the shell's.
+window-rule {
+    match app-id="^amane-settings$"
+    background-effect {
+        blur true
+        material "frost"
+    }
+
+    popups {
+        geometry-corner-radius 10
+        background-effect {
+            blur true
+            material "glass"
+        }
+    }
+}
+
+// The shell's materials (material.* tokens), by the names it asks for: liquid
+// glass, its clear variant for media, and frost without a lens; each `-still`
+// twin is for reduced motion. They replace a hand-written `materials {}` of
+// the same names. See the niri fork's docs/wiki/Window-Effects.md.
+materials {
+    material "frost" {
+        bevel 8
+        dispersion 0
+        far-rim 0
+        refraction 0
+        rim 0.12
+        specular 0
+        tint 1
+    }
+    material "glass" {
+        adaptive-tint 0.6
+        bevel 30
+        dispersion 0.6
+        far-rim 0.15
+        refraction 24
+        report-backdrop true
+        rim 0.25
+        specular 0.15
+        tint 1
+    }
+    material "glass-clear" {
+        bevel 30
+        dispersion 0.8
+        far-rim 0.2
+        refraction 32
+        report-backdrop true
+        rim 0.3
+        specular 0.25
+        tint 1
+    }
+    material "frost-still" {
+        bevel 8
+        dispersion 0
+        far-rim 0
+        refraction 0
+        rim 0.12
+        specular 0
+        tint 1
+        materialize false
+    }
+    material "glass-still" {
+        adaptive-tint 0.6
+        bevel 30
+        dispersion 0.6
+        far-rim 0.15
+        refraction 24
+        report-backdrop true
+        rim 0.25
+        specular 0.15
+        tint 1
+        materialize false
+    }
+    material "glass-clear-still" {
+        bevel 30
+        dispersion 0.8
+        far-rim 0.2
+        refraction 32
+        report-backdrop true
+        rim 0.3
+        specular 0.25
+        tint 1
+        materialize false
     }
 }
 // <<< amane layer-rules
@@ -229,8 +369,8 @@ binds {
     Mod+Return hotkey-overlay-title="Open a Terminal: foot" { spawn "foot"; }
     Mod+T hotkey-overlay-title="Open a Terminal: foot" { spawn "foot"; }
     Mod+D hotkey-overlay-title="Run an Application: wofi" { spawn "wofi" "--show" "drun"; }
-    // NIXOS-NOTE: amane launcher binary isn't packaged yet; disabled.
-    /-Mod+Space hotkey-overlay-title="App Launcher: amane" { spawn "/home/ocbk/.config/amane/target/release/examples/launcher"; }
+    // the amane-shell launcher, toggled over the shell's IPC socket
+    Mod+Space hotkey-overlay-title="App Launcher: amane" { spawn "sh" "-c" "printf 'launcher\\ntoggle\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock"; }
     // through logind, so hypridle starts swaylock and the shell sees the lock
     // (Keep Awake lets the screen blank while locked)
     Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "loginctl" "lock-session"; }
@@ -389,18 +529,5 @@ binds {
     Mod+Shift+P { power-off-monitors; }
 }
 
-// Liquid glass for blur shapes (niri fork, niri-blur-shapes-v1): amane-shell's
-// Quick Settings modules ask for the "glass" material. See the fork's
-// docs/wiki/Window-Effects.md for what each value does.
-materials {
-    material "glass" {
-        refraction 24
-        bevel 30
-        dispersion 0.6
-        rim 0.25
-        far-rim 0.15
-        specular 0.15
-        tint 1.0
-        adaptive-tint 0.6
-    }
-}
+// The materials (glass, glass-clear, frost and their -still twins) are generated
+// from amane-shell's tokens, in the amane layer-rules region above.
