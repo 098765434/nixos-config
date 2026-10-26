@@ -31,6 +31,15 @@
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/nixos-config/waybar/style.css";
 
+  # macOS-style app icons, each named after an app's Icon= key. ~/.local/share
+  # is searched before the system dirs, so these replace the apps' own icons.
+  # The ArtCraft apps wear their Adobe equivalents (photocraft = Photoshop,
+  # vectorcraft = Illustrator, designcraft = InDesign, figcraft = Figma).
+  xdg.dataFile = lib.mapAttrs' (file: _:
+    lib.nameValuePair "icons/hicolor/512x512/apps/${file}"
+      { source = ./icons/${file}; })
+    (builtins.readDir ./icons);
+
   # --- XDG user directories ---
   # niri has no desktop environment to run xdg-user-dirs, so nothing would create
   # the standard folders on first login — declare them here instead. Enabling the
