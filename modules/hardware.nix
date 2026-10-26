@@ -49,5 +49,16 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     # wireplumber (provides wpctl for the niri volume binds) is on by default.
+
+    # PipeWire's X11-bell module opens DISPLAY at login to play the terminal
+    # bell through libcanberra. Under niri that connection is what starts
+    # xwayland-satellite's Xwayland (about 85 MB of RSS between them) three
+    # seconds after login, with no X app running. Nothing here rings an X11
+    # bell, so the module stays off; X apps still get Xwayland on demand.
+    extraConfig.pipewire."99-no-x11-bell" = {
+      "context.properties" = {
+        "module.x11.bell" = false;
+      };
+    };
   };
 }
