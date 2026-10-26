@@ -50,6 +50,8 @@ layout {
     // The mat fills the gaps in normal mode and fades out in the overview, so
     // the same gaps show the wallpaper there. Replaces gaps 0 + a black border.
     gaps 8
+    // No space between workspaces while switching in the normal view.
+    workspace-gap 0
     // Transparent so the backdrop wallpaper (layer-rule below) shows through.
     background-color "transparent"
     center-focused-column "never"
@@ -67,6 +69,8 @@ layout {
     }
     mat {
         color "#000000"
+        // stop at the status bar, so it sits on the wallpaper
+        behind-bars false
         // a sharp edge one gap past the end columns; "soft" fades out over them
         ends "hard"
         // material "glass"
