@@ -151,7 +151,7 @@
     };
   };
 
-  # --- Bar: amane-shell (custom niri taskbar) ---
+  # --- Bar: amane-shell (custom niri status bar) ---
   # Installed from the flake input and run as a user service bound to the niri
   # graphical session, so it starts on login and restarts on crash (logs via
   # `journalctl --user -u amane-shell`) — mirrors the hypridle pattern and
