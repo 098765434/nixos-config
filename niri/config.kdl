@@ -47,7 +47,9 @@ output "eDP-1" {
 
 layout {
     empty-workspace-above-first
-    gaps 0
+    // The mat fills the gaps in normal mode and fades out in the overview, so
+    // the same gaps show the wallpaper there. Replaces gaps 0 + a black border.
+    gaps 8
     // Transparent so the backdrop wallpaper (layer-rule below) shows through.
     background-color "transparent"
     center-focused-column "never"
@@ -63,8 +65,15 @@ layout {
         active-color "#7fc8ff"
         inactive-color "#505050"
     }
+    mat {
+        color "#000000"
+        // fade out over the end columns, clear by their outer edges
+        ends "soft"
+        soft-end-length 96
+        // material "glass"
+    }
     border {
-        //off
+        off
         width 4
         active-color "#000"
         inactive-color "#000"
