@@ -12,9 +12,19 @@ prefer-no-csd
 // Global blur backend tune. The `background-effect { blur true }` block
 // inside layer/window rules enables blur per-surface; this section
 // controls the shared dual-Kawase pipeline.
+//
+// Memory: every xray buffer (background and backdrop, per output and render
+// target) keeps one blur chain for these passes/offset, plus one more chain
+// for each distinct blur-passes/blur-offset pair a material asks for (about
+// 26 MB each at 2880x1800, up to four kept). Every blurred rule below names a
+// material, so the chain for this block is only used when it matches one.
+// 3/2 is glass's pair (most surfaces), so glass draws from this chain and no
+// extra one is built for it. Noise and saturation are per-element uniforms
+// (every material sets its own), not part of the chain, so the look is the
+// same. See the niri fork's docs/fork/effects/memory.md.
 blur {
-    passes 1
-    offset 1
+    passes 3
+    offset 2
     noise 0.02
     saturation 1.3
 }
@@ -122,13 +132,17 @@ layer-rule {
 // removing the `/-` if you want waybar back.
 /-spawn-at-startup "waybar"
 
-// Network tray applet.
-spawn-at-startup "nm-applet" "--indicator"
+// Network tray applet. Off: the amane quick-settings network tiles cover
+// Wi-Fi, wired and VPN. Remove the `/-` to bring it back.
+/-spawn-at-startup "nm-applet" "--indicator"
 
 // Clipboard history: record copies so cliphist can recall them (bind below).
 spawn-sh-at-startup "wl-paste --watch cliphist store"
 
+// skip-at-startup: the overlay's texture is otherwise rendered and cached per
+// output at every start, for a few MB nobody looks at. Mod+Shift+/ still shows it.
 hotkey-overlay {
+    skip-at-startup
 }
 
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"

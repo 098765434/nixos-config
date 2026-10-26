@@ -31,6 +31,24 @@
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/nixos-config/waybar/style.css";
 
+  # KDE Connect stays installed (programs.kdeconnect opens its ports) but its
+  # daemon doesn't start at login: this Hidden= entry masks the system
+  # autostart. Open the KDE Connect app to start it when you need the phone.
+  xdg.configFile."autostart/org.kde.kdeconnect.daemon.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=KDE Connect
+    Hidden=true
+  '';
+  # Same for nm-applet, which also has a system autostart entry besides the
+  # (now disabled) niri spawn: the shell's network tiles replace it.
+  xdg.configFile."autostart/nm-applet.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=NetworkManager Applet
+    Hidden=true
+  '';
+
   # macOS-style app icons, each named after an app's Icon= key. ~/.local/share
   # is searched before the system dirs, so these replace the apps' own icons.
   # The ArtCraft apps wear their Adobe equivalents (photocraft = Photoshop,

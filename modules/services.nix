@@ -1,12 +1,14 @@
 # System services: networking extras, secrets, file-manager backend.
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   # Tailscale VPN (run `sudo tailscale up` once after install to authenticate).
   services.tailscale.enable = true;
 
-  # SSH server.
+  # SSH server. Installed but not started at boot, to keep idle RAM down:
+  # `sudo systemctl start sshd` when you need to log in from elsewhere.
   services.openssh.enable = true;
+  systemd.services.sshd.wantedBy = lib.mkForce [ ];
 
   # Syncthing — continuously syncs the Obsidian vault with the "pi5" server.
   # DECLARATIVE: the devices/folders below are the source of truth. With
@@ -96,6 +98,9 @@
     nssmdns4 = true;
     openFirewall = true;
   };
+  # Not started at boot; its socket still starts it on the first .local
+  # lookup or printer/network browse.
+  systemd.services.avahi-daemon.wantedBy = lib.mkForce [ ];
 
   # Encrypted DNS via systemd-resolved + DNS-over-TLS. "opportunistic" uses TLS
   # when the resolver supports it and falls back otherwise (won't break networks

@@ -12,7 +12,7 @@ configuration.nix      core: boot, networking, locale, user, nix
 modules/
   disk.nix             disko: GPT + ESP + LUKS2 + btrfs subvolumes (+ install notes)
   hardware.nix         firmware, AMD GPU, bluetooth, fprintd, power, audio, i2c
-  desktop.nix          niri, greetd, portals, polkit, flatpak, blueman, fonts
+  desktop.nix          niri, greetd, portals, polkit, flatpak, fonts
   gaming.nix           steam, gamemode
   services.nix         tailscale, ssh, avahi, gvfs, gnome-keyring
   apps.nix             system packages

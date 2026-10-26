@@ -36,9 +36,6 @@
   # KDE Connect (opens its own firewall ports).
   programs.kdeconnect.enable = true;
 
-  # Bluetooth tray applet (works better under niri than gnome-control-center).
-  services.blueman.enable = true;
-
   # Flatpak — chiefly your browser (Zen). After first boot:
   #   flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
   #   flatpak install flathub app.zen_browser.zen

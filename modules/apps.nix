@@ -15,7 +15,6 @@
     xwayland-satellite  # run X11 apps under niri
 
     # --- niri desktop niceties ---
-    blueman          # Bluetooth GUI (service enabled in desktop.nix)
     pwvucontrol      # PipeWire volume GUI
     networkmanagerapplet  # nm-applet tray + nm-connection-editor
     slurp            # region selection (screenshots/screencasts)

@@ -1,5 +1,5 @@
 # Hardware & low-level services for the AMD Ryzen AI 7 / Radeon 860M laptop.
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   # Latest kernel — this is very new AMD silicon (Ryzen AI 7 450 / Krackan Point,
@@ -16,7 +16,8 @@
     enable32Bit = true;   # 32-bit libs for Steam/Heroic/Wine
   };
 
-  # Bluetooth (GUI applet is services.blueman in desktop.nix).
+  # Bluetooth (controls are the shell's quick-settings tile; bluetoothctl
+  # for pairing devices that need a PIN).
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
@@ -28,6 +29,9 @@
   # Power management (don't also enable TLP), firmware updates, zram, TRIM.
   services.power-profiles-daemon.enable = true;
   services.fwupd.enable = true;
+  # No background metadata refresh: that timer is what wakes fwupd and leaves
+  # it resident. Run `fwupdmgr refresh && fwupdmgr update` by hand instead.
+  systemd.timers.fwupd-refresh.wantedBy = lib.mkForce [ ];
   zramSwap.enable = true;
   services.fstrim.enable = true;
 
