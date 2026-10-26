@@ -67,9 +67,8 @@ layout {
     }
     mat {
         color "#000000"
-        // fade out over the end columns, clear by their outer edges
-        ends "soft"
-        soft-end-length 96
+        // a sharp edge one gap past the end columns; "soft" fades out over them
+        ends "hard"
         // material "glass"
     }
     border {
