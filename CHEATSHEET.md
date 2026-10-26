@@ -150,6 +150,22 @@ folder, not the toolbar — open `Ctrl+Shift+O` to find them.
 ## Post-build sanity checks
 
 ```sh
-niri validate ~/.config/niri/config.kdl
+niri validate -c ~/.config/niri/config.kdl
 systemctl --user status hyprpolkitagent amane-shell hypridle
 ```
+
+## GPU memory of the desktop
+
+On this iGPU "VRAM" is RAM the firmware reserves at boot (4 GiB). What niri and the shell hold
+is in their `fdinfo`, which needs root under `ptrace_scope 1`:
+
+```sh
+gpu() { sudo awk '/drm-client-id/{id=$2} /drm-total-(vram|gtt):/{m[id SUBSEP $1]=$2*($3=="MiB"?1024:1)}
+  END{for(k in m){split(k,a,SUBSEP); t[a[2]]+=m[k]} for(x in t) printf "  %s %.0f MiB\n", x, t[x]/1024}' /proc/$1/fdinfo/*; }
+echo niri; gpu $(pidof niri); echo shell; gpu $(pgrep -f '\.amane-shell-wrapped')
+cat /sys/class/drm/card*/device/mem_info_vram_used   # the whole GPU, bytes
+sudo ss -xp | grep X11-unix                         # who keeps Xwayland alive
+```
+
+Record it at idle, after the launcher and Quick Settings' edit mode, after a screenshot and a
+window swipe. The budget and what has been cut: amane-shell's `docs/development/memory.md`.
