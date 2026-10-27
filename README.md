@@ -12,12 +12,12 @@ configuration.nix      core: boot, networking, locale, user, nix
 modules/
   disk.nix             disko: GPT + ESP + LUKS2 + btrfs subvolumes (+ install notes)
   hardware.nix         firmware, AMD GPU, bluetooth, fprintd, power, audio, i2c
-  desktop.nix          niri, greetd, portals, polkit, flatpak, fonts
+  desktop.nix          niri, greetd, portals, polkit (the shell is the agent), flatpak, fonts
   gaming.nix           steam, gamemode
   services.nix         tailscale, ssh, avahi, gvfs, gnome-keyring
   apps.nix             system packages
   managed.nix          settings Shell Settings owns (reads managed/settings.json) + its activate helper
-  options.nix          our own options (amane.*): idle timeouts, on-demand units, packages from Settings
+  options.nix          our own options (amane.*): idle timeouts, on-demand units, packages from Settings, the update check timer
 managed/
   registry.nix         which settings Shell Settings may own, and their NixOS option paths
   settings.json        their values — written by Shell Settings, or by hand
@@ -185,7 +185,7 @@ flatpak install flathub app.zen_browser.zen
 ## Post-build checks
 
 - `niri validate ~/.config/niri/config.kdl`
-- `systemctl --user status hyprpolkitagent amane-shell hypridle`
+- `systemctl --user status amane-shell hypridle amane-update-check.timer`
 - waybar shows workspaces (confirms nixpkgs waybar has the niri module)
 - `nix develop` gives `rustc`, `cargo`, `java`
 
@@ -233,10 +233,19 @@ switch it commits **only** `managed/settings.json` as `settings: …` and never 
 with `git revert`; `nix eval --json .#amaneSettings` shows what Settings sees. Details:
 amane-shell's `docs/integration/nixos.md`.
 
-What lives in `managed/settings.json` today: the time zone; the services on the Services page
-(SSH, Avahi, Syncthing, KDE Connect, Flatpak, fprintd, fwupd, Bluetooth, Tailscale, Sunshine) and
-whether SSH/Avahi start at boot; the hypridle idle timeouts (Power & Lock, through `amane.idle.*`
-in `modules/options.nix`); packages added from Settings → Apps (`amane.packages`, nixpkgs
-attribute paths); the boot entries kept. Settings → Software Update checks for updates by
-building against a fresh lock first; applying one writes `flake.lock` and commits it with
-`managed/settings.json` as `update: …`.
+What lives in `managed/settings.json` today: the time zone; the computer's name, language and
+keyboard layout/variant (General; the console keymap follows the layout); the services on the
+Services page (SSH, Avahi, Syncthing, KDE Connect, Flatpak, fprintd, fwupd, Bluetooth, Tailscale,
+Sunshine) and whether SSH/Avahi start at boot; the hypridle idle timeouts (Power & Lock, through
+`amane.idle.*` in `modules/options.nix`); packages added from Settings → Apps (`amane.packages`,
+nixpkgs attribute paths); the boot entries kept; how often to check for updates. Settings →
+Software Update checks for updates by building against a fresh lock first; applying one writes
+`flake.lock` and commits it with `managed/settings.json` as `update: …`.
+
+A setting a hand-written file still sets shows locked in Settings, with the line, and **Move to
+Settings…** comments that line out and commits it with `settings.json` as `move: …` — the one
+edit Settings makes to a `.nix` file. The scheduled check (`amane-update-check`, a user timer
+from `amane.updates.check`: daily unless changed) relocks beside the repo, never builds, and
+notifies through the shell when inputs moved; the toast opens Software Update. The shell itself
+is the polkit agent (`amane-shell` registers it; the niri flake's polkit-kde service is off), so
+every password prompt is the shell's own alert.

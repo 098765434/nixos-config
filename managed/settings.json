@@ -7,7 +7,11 @@
   "flatpak": true,
   "fprintd": true,
   "fwupd": true,
+  "hostName": "nixos",
   "kdeconnect": true,
+  "keyboardLayout": "no",
+  "keyboardVariant": "",
+  "locale": "en_US.UTF-8",
   "lockAfter": 240,
   "openssh": true,
   "packages": [],
@@ -15,5 +19,6 @@
   "sshdOnDemand": true,
   "syncthing": true,
   "tailscale": true,
-  "timeZone": "Europe/Oslo"
+  "timeZone": "Europe/Oslo",
+  "updateCheck": "daily"
 }

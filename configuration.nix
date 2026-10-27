@@ -43,7 +43,7 @@
   # ---------------------------------------------------------------------------
   # Networking
   # ---------------------------------------------------------------------------
-  networking.hostName = "nixos";
+  # networking.hostName is `hostName` in managed/settings.json (Shell Settings → General).
   networking.networkmanager = {
     enable = true;
     # Privacy: randomize the Wi-Fi MAC so networks can't track your hardware
@@ -76,13 +76,11 @@
   # Locale / time / keyboard (Norwegian — adjust to taste)
   # ---------------------------------------------------------------------------
   # time.timeZone is `timeZone` in managed/settings.json (Shell Settings).
-  i18n.defaultLocale = "en_US.UTF-8";
-  console.keyMap = "no";
-  # niri's xkb section is empty, so it reads the layout from locale1, set here.
-  services.xserver.xkb = {
-    layout = "no";
-    variant = "";
-  };
+  # i18n.defaultLocale is `locale` there (General → Language).
+  # niri's xkb section is empty, so it reads the layout from locale1, which
+  # services.xserver.xkb sets: `keyboardLayout` and `keyboardVariant` in
+  # managed/settings.json (General → Keyboard). The console keymap follows it.
+  console.useXkbConfig = true;
 
   # ---------------------------------------------------------------------------
   # User account

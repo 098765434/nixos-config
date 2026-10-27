@@ -47,18 +47,13 @@
     binfmt = true;
   };
 
-  # Polkit authentication agent — niri doesn't start one itself; without it,
-  # privileged GUI actions fail silently. Check: systemctl --user status hyprpolkitagent
+  # Polkit: the shell is the session's authentication agent (amane-shell
+  # registers org.freedesktop.PolicyKit1.AuthenticationAgent and asks for
+  # the password in its own alert), so the niri flake's polkit-kde agent
+  # stays off. Check: busctl --system call … CheckAuthorization, or
+  # `systemctl --user start sshd`-style prompts from Shell Settings.
   security.polkit.enable = true;
-  systemd.user.services.hyprpolkitagent = {
-    description = "Hyprland polkit authentication agent";
-    wantedBy = [ "graphical-session.target" ];
-    after = [ "graphical-session.target" ];
-    serviceConfig = {
-      ExecStart = lib.getExe pkgs.hyprpolkitagent;
-      Restart = "on-failure";
-    };
-  };
+  systemd.user.services.niri-flake-polkit.enable = false;
 
   # zoxide (smarter cd) with bash integration.
   programs.zoxide.enable = true;

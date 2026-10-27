@@ -31,7 +31,10 @@ Nothing takes effect until the next `nixos-rebuild switch`.
 
 Or from the desktop: Shell Settings → Software Update → **Check for Updates** builds the
 updated system first and shows what changes; **Apply Now** switches, writes `flake.lock` and
-commits it (`update: …`). **Update** on one input bumps just that one.
+commits it (`update: …`). **Update** on one input bumps just that one. A daily user timer
+(`amane-update-check`; **Check automatically** on that page) looks for moved inputs without
+building and sends a toast; `systemctl --user start amane-update-check` runs it now, and its
+findings are in `~/.local/state/amane-shell/nixos/check.json`.
 
 Updating a single ArtCraft app without the script: edit
 `artcraft-sources.json`, change the `version`, replace the `hash` with
