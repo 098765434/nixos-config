@@ -1,8 +1,10 @@
 # Options of our own that Shell Settings can point at (managed/registry.nix
 # addresses settings by option path, so what isn't an option gets one here):
 # the idle timeouts behind hypridle's listener list, "installed but not
-# started at boot" for a service, and packages added from Settings.
-{ config, lib, pkgs, ... }:
+# started at boot" for a service, packages added from Settings, and how
+# often to check for updates (a user timer that relocks beside the repo,
+# never building, and notifies through the shell).
+{ config, lib, pkgs, inputs, ... }:
 
 let
   cfg = config.amane;
@@ -17,6 +19,57 @@ let
     default = false;
     description = "Install ${what} but don't start it at boot: start it by hand when needed.";
   };
+
+  # amane-update-check: relocks the flake into the shell's state dir (the
+  # repo's flake.lock is untouched), writes check.json with what changed,
+  # and notifies once per new set of changes; clicking the toast opens
+  # Shell Settings → Software Update. A check that can't reach the network
+  # only records why.
+  amaneShell = inputs.amane-shell.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  updateCheck = pkgs.writeShellApplication {
+    name = "amane-update-check";
+    runtimeInputs = [ pkgs.nix pkgs.jq pkgs.libnotify pkgs.coreutils pkgs.git amaneShell ];
+    text = ''
+      repo="$HOME/nixos-config"
+      dir="''${XDG_STATE_HOME:-$HOME/.local/state}/amane-shell/nixos"
+      mkdir -p "$dir"
+      now=$(date +%s)
+
+      if ! nix flake update --flake "$repo" --output-lock-file "$dir/check.lock" --no-warn-dirty 2>"$dir/check.err"; then
+        jq -n --argjson now "$now" --rawfile err "$dir/check.err" \
+          '{checked: $now, changes: [], error: (($err | split("\n") | map(select(length > 0)) | last) // "nix flake update failed")}' \
+          > "$dir/check.json.tmp"
+        mv "$dir/check.json.tmp" "$dir/check.json"
+        exit 0
+      fi
+
+      jq -n --argjson now "$now" --slurpfile old "$repo/flake.lock" --slurpfile new "$dir/check.lock" '
+        def revs(l): l[0] as $l
+          | [$l.nodes.root.inputs | to_entries[] | {key: .key, value: ($l.nodes[.value].locked.rev // "")}]
+          | from_entries;
+        revs($old) as $o | revs($new) as $n
+        | {checked: $now,
+           changes: [$o | to_entries[] | select($n[.key] != null and $n[.key] != .value)
+                     | {name: .key, from: .value, to: $n[.key]}]}
+      ' > "$dir/check.json.tmp"
+      mv "$dir/check.json.tmp" "$dir/check.json"
+
+      names=$(jq -r '[.changes[].name] | join(", ")' "$dir/check.json")
+      [ -n "$names" ] || exit 0
+      if [ "$(jq -c .changes "$dir/check.json")" = "$(jq -c .changes "$dir/notified.json" 2>/dev/null || true)" ]; then
+        exit 0
+      fi
+      cp "$dir/check.json" "$dir/notified.json"
+      if notify-send -a "Software Update" -i system-software-update --action=default=Open \
+           "Updates available" "$names" | grep -q '^default$'; then
+        amane-settings --page update
+      fi
+    '';
+  };
+  checkEvery = {
+    daily = "daily";
+    weekly = "weekly";
+  };
 in
 {
   options.amane = {
@@ -29,6 +82,11 @@ in
       type = t.listOf t.str;
       default = [ ];
       description = "nixpkgs attribute paths (dotted) added from Shell Settings → Apps.";
+    };
+    updates.check = lib.mkOption {
+      type = t.enum [ "daily" "weekly" "never" ];
+      default = "daily";
+      description = "How often a user timer checks the flake's inputs for updates (no build) and notifies.";
     };
   };
 
@@ -43,6 +101,28 @@ in
 
     environment.systemPackages =
       map (name: lib.getAttrFromPath (lib.splitString "." name) pkgs) cfg.packages;
+
+    # the update check, as a user timer (it needs the session bus for the
+    # toast and the user's nix settings); `systemctl --user start
+    # amane-update-check` runs one now
+    home-manager.users.ocbk.systemd.user = lib.mkIf (cfg.updates.check != "never") {
+      services.amane-update-check = {
+        Unit.Description = "Check the NixOS configuration's inputs for updates";
+        Service = {
+          Type = "oneshot";
+          ExecStart = lib.getExe updateCheck;
+        };
+      };
+      timers.amane-update-check = {
+        Unit.Description = "Check for NixOS updates ${cfg.updates.check}";
+        Timer = {
+          OnCalendar = checkEvery.${cfg.updates.check};
+          Persistent = true;
+          RandomizedDelaySec = "1h";
+        };
+        Install.WantedBy = [ "timers.target" ];
+      };
+    };
 
     # hypridle's listeners, in timeout order; a timeout of 0 leaves one out.
     home-manager.users.ocbk.services.hypridle.settings.listener =

@@ -1,18 +1,21 @@
 # The settings Shell Settings may own: one entry per setting, with its NixOS
 # option path. `id` is its key in settings.json; `page` is the Settings page
-# that shows it (about, services, power, apps, storage); `control` is how:
+# that shows it (about, general, services, power, apps, storage, update);
+# `control` is how:
 #   switch                a boolean
 #   int (min, max)        a slider over the range
 #   choice (choices)      one of `choices = [ { label; value; } … ]`
-#   timezone / text       a field
+#   timezone / text       a field; `check` names what Settings checks it
+#                         against: hostname, xkbLayout, xkbVariant
 #   packages              a list of nixpkgs attribute paths (Apps draws it)
 # `tier` says when it takes effect (rebuild, restart). A service entry may
 # name its systemd `unit` (and `scope = "user"` for a user unit) so Settings
 # shows whether it's running, and `onDemand`, the id of its "only when
 # needed" switch. modules/managed.nix turns each into an option definition,
 # and the flake's `amaneSettings` output gives Settings the same list with
-# each option's value, type and which file sets it. The amane.* paths are
-# declared in modules/options.nix.
+# each option's value, type, which file sets it and on which line (so
+# "Move to Settings" can take a hand-written line over). The amane.* paths
+# are declared in modules/options.nix.
 let
   minutes = [
     { label = "1 minute"; value = 60; }
@@ -31,6 +34,38 @@ let
     control = "switch";
     tier = "rebuild";
   } // extra;
+  # languages the General page offers; glibc knows many more, and a hand
+  # edit of settings.json may name any of them
+  locale = label: code: { inherit label; value = "${code}.UTF-8"; };
+  locales = [
+    (locale "English (United States)" "en_US")
+    (locale "English (United Kingdom)" "en_GB")
+    (locale "English (Australia)" "en_AU")
+    (locale "English (Canada)" "en_CA")
+    (locale "Norsk bokmål" "nb_NO")
+    (locale "Norsk nynorsk" "nn_NO")
+    (locale "Svenska" "sv_SE")
+    (locale "Dansk" "da_DK")
+    (locale "Suomi" "fi_FI")
+    (locale "Íslenska" "is_IS")
+    (locale "Deutsch" "de_DE")
+    (locale "Nederlands" "nl_NL")
+    (locale "Français" "fr_FR")
+    (locale "Español" "es_ES")
+    (locale "Italiano" "it_IT")
+    (locale "Português (Brasil)" "pt_BR")
+    (locale "Português (Portugal)" "pt_PT")
+    (locale "Polski" "pl_PL")
+    (locale "Čeština" "cs_CZ")
+    (locale "Русский" "ru_RU")
+    (locale "Українська" "uk_UA")
+    (locale "Türkçe" "tr_TR")
+    (locale "日本語" "ja_JP")
+    (locale "中文（简体）" "zh_CN")
+    (locale "中文（繁體）" "zh_TW")
+    (locale "한국어" "ko_KR")
+    { label = "None (C.UTF-8)"; value = "C.UTF-8"; }
+  ];
 in
 [
   # --- About This Computer ---
@@ -40,6 +75,44 @@ in
     page = "about";
     label = "Time zone";
     control = "timezone";
+    tier = "rebuild";
+  }
+
+  # --- General ---
+  {
+    id = "hostName";
+    path = [ "networking" "hostName" ];
+    page = "general";
+    label = "Computer name";
+    control = "text";
+    check = "hostname";
+    tier = "rebuild";
+  }
+  {
+    id = "locale";
+    path = [ "i18n" "defaultLocale" ];
+    page = "general";
+    label = "Language";
+    control = "choice";
+    choices = locales;
+    tier = "restart";
+  }
+  {
+    id = "keyboardLayout";
+    path = [ "services" "xserver" "xkb" "layout" ];
+    page = "general";
+    label = "Keyboard layout";
+    control = "text";
+    check = "xkbLayout";
+    tier = "rebuild";
+  }
+  {
+    id = "keyboardVariant";
+    path = [ "services" "xserver" "xkb" "variant" ];
+    page = "general";
+    label = "Keyboard variant";
+    control = "text";
+    check = "xkbVariant";
     tier = "rebuild";
   }
 
@@ -93,6 +166,21 @@ in
     page = "apps";
     label = "Added in Settings";
     control = "packages";
+    tier = "rebuild";
+  }
+
+  # --- Software Update ---
+  {
+    id = "updateCheck";
+    path = [ "amane" "updates" "check" ];
+    page = "update";
+    label = "Check automatically";
+    control = "choice";
+    choices = [
+      { label = "Daily"; value = "daily"; }
+      { label = "Weekly"; value = "weekly"; }
+      { label = "Never"; value = "never"; }
+    ];
     tier = "rebuild";
   }
 

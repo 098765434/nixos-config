@@ -113,16 +113,42 @@
           strip = file:
             let m = builtins.match "/nix/store/[a-z0-9]{32}-source/(.*)" file;
             in if m == null then file else builtins.head m;
+          # where a repo file defines an option, to the line: the module
+          # is loaded again with its arguments and the attribute's position
+          # read off it. null when the module's shape hides it (a mkMerge,
+          # a let), and Settings then says to edit by hand.
+          moduleArgs = sys._module.args // (sys._module.specialArgs or { })
+            // { inherit (sys) config options pkgs; inherit lib; };
+          loaded = file:
+            let
+              m = import file;
+              called = if builtins.isFunction m
+                then m (builtins.intersectAttrs (builtins.functionArgs m) moduleArgs)
+                else m;
+            in called.config or called;
+          position = path: file:
+            let
+              r = builtins.tryEval (
+                let
+                  parent = lib.attrByPath (lib.init path) { } (loaded file);
+                  pos = builtins.unsafeGetAttrPos (lib.last path) parent;
+                in if pos == null then null else { file = strip pos.file; line = pos.line; });
+            in if r.success then r.value else null;
           one = r:
-            let opt = lib.getAttrFromPath r.path sys.options;
+            let
+              opt = lib.getAttrFromPath r.path sys.options;
+              # only real definitions: an unset option's default counts as one
+              # at its declaration, at mkOptionDefault's priority (1500)
+              defs = if (opt.highestPrio or 0) >= 1500 then [ ] else opt.definitionsWithLocations;
+              elsewhere = builtins.filter
+                (d: lib.hasPrefix "${self}/" d.file && strip d.file != "modules/managed.nix") defs;
             in r // {
               value = lib.getAttrFromPath r.path sys.config;
               default = opt.default or null;
               type = opt.type.description;
               description = opt.description or "";
-              # only real definitions: an unset option's default counts as one
-              # at its declaration, at mkOptionDefault's priority (1500)
-              setIn = if (opt.highestPrio or 0) >= 1500 then [ ] else map (d: strip d.file) opt.definitionsWithLocations;
+              setIn = map (d: strip d.file) defs;
+              setAt = builtins.filter (p: p != null) (map (d: position r.path d.file) elsewhere);
             };
           # a package's name without instantiating it; the odd one that
           # can't say is "?"
