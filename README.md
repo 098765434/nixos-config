@@ -16,6 +16,10 @@ modules/
   gaming.nix           steam, gamemode
   services.nix         tailscale, ssh, avahi, gvfs, gnome-keyring
   apps.nix             system packages
+  managed.nix          settings Shell Settings owns (reads managed/settings.json) + its activate helper
+managed/
+  registry.nix         which settings Shell Settings may own, and their NixOS option paths
+  settings.json        their values — written by Shell Settings, or by hand
 home/home.nix          home-manager: niri/waybar/foot/wofi/amane-shell/hypridle/direnv
 niri/config.kdl        niri config (symlinked into ~/.config via mkOutOfStoreSymlink — edit live, no rebuild)
 waybar/                waybar config + style (also symlinked live; adapted from mechakotik/dots)
@@ -216,3 +220,14 @@ flatpak install flathub app.zen_browser.zen
 - Package the `amane` / `caelestia` quickshell shell (currently stubbed by
   waybar + wofi + mako).
 - Optional: encrypted swap partition if you want hibernation (currently zram only).
+
+## Shell Settings
+
+The shell's settings app has a **System** group that manages this repo. It never edits the
+hand-written `.nix` files: it writes `managed/settings.json` (the keys are listed in
+`managed/registry.nix`, and `modules/managed.nix` turns them into option definitions), builds
+the system as your user, shows what changes, then activates it through polkit
+(`amane-nixos-activate`, exit 2 on anything but a built NixOS system). After a successful
+switch it commits **only** `managed/settings.json` as `settings: …` and never pushes. Undo one
+with `git revert`; `nix eval --json .#amaneSettings` shows what Settings sees. Details:
+amane-shell's `docs/integration/nixos.md`.

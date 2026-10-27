@@ -74,6 +74,12 @@
         modules = [
           ./configuration.nix
 
+          # Record the commit each generation was built from (`-dirty` when
+          # the tree had uncommitted changes): `nixos-version --json` shows it,
+          # and Shell Settings compares it with HEAD to say whether the
+          # running system is up to date.
+          { system.configurationRevision = self.rev or self.dirtyRev or null; }
+
           # Declarative disk layout (LUKS + btrfs).
           disko.nixosModules.disko
 
@@ -93,6 +99,34 @@
           }
         ];
       };
+
+      # What Shell Settings reads: every setting in managed/registry.nix with
+      # its effective value, the option's type, default and description, and
+      # the repo files that set it (`modules/managed.nix` when it's ours).
+      #   nix eval --json .#amaneSettings
+      amaneSettings =
+        let
+          lib = nixpkgs.lib;
+          sys = self.nixosConfigurations.nixos-niri;
+          registry = import ./managed/registry.nix;
+          # the flake is copied to the store, so its files show as /nix/store/…-source/<file>
+          strip = file:
+            let m = builtins.match "/nix/store/[a-z0-9]{32}-source/(.*)" file;
+            in if m == null then file else builtins.head m;
+          one = r:
+            let opt = lib.getAttrFromPath r.path sys.options;
+            in r // {
+              value = lib.getAttrFromPath r.path sys.config;
+              default = opt.default or null;
+              type = opt.type.description;
+              description = opt.description or "";
+              setIn = map (d: strip d.file) opt.definitionsWithLocations;
+            };
+        in {
+          host = "nixos-niri";
+          revision = self.rev or self.dirtyRev or null;
+          entries = map one registry;
+        };
 
       # Per-project dev toolchain: `nix develop` (or direnv) drops you into a
       # shell with Rust + JDK, keeping them off the global system.

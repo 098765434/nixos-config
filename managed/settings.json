@@ -1,0 +1,5 @@
+{
+  "bootEntries": 10,
+  "tailscale": true,
+  "timeZone": "Europe/Oslo"
+}

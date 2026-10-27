@@ -3,7 +3,7 @@
 
 {
   # Tailscale VPN (run `sudo tailscale up` once after install to authenticate).
-  services.tailscale.enable = true;
+  # Switched on as `tailscale` in managed/settings.json (Shell Settings).
 
   # SSH server. Installed but not started at boot, to keep idle RAM down:
   # `sudo systemctl start sshd` when you need to log in from elsewhere.

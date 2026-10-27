@@ -22,6 +22,7 @@
     ./modules/services.nix
     ./modules/security.nix
     ./modules/apps.nix
+    ./modules/managed.nix   # settings Shell Settings owns (managed/settings.json)
 
     # ArtCraft creative apps (vectorcraft, figcraft, photocraft, designcraft).
     ./artcraft.nix
@@ -32,9 +33,9 @@
   # ---------------------------------------------------------------------------
   boot.loader.systemd-boot = {
     enable = true;
-    # Cap stored boot entries. Your /boot is only ~1 GB, so unbounded
-    # generations would eventually fill it and break rebuilds.
-    configurationLimit = 10;
+    # The cap on stored boot entries (your /boot is only ~1 GB, so unbounded
+    # generations would eventually fill it and break rebuilds) is
+    # `bootEntries` in managed/settings.json, set from Shell Settings.
   };
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -73,7 +74,7 @@
   # ---------------------------------------------------------------------------
   # Locale / time / keyboard (Norwegian — adjust to taste)
   # ---------------------------------------------------------------------------
-  time.timeZone = "Europe/Oslo";
+  # time.timeZone is `timeZone` in managed/settings.json (Shell Settings).
   i18n.defaultLocale = "en_US.UTF-8";
   console.keyMap = "no";
   # niri's xkb section is empty, so it reads the layout from locale1, set here.
