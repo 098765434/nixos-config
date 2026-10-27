@@ -16,8 +16,8 @@
     enable32Bit = true;   # 32-bit libs for Steam/Heroic/Wine
   };
 
-  # Bluetooth (controls are the shell's quick-settings tile; bluetoothctl
-  # for pairing devices that need a PIN).
+  # Bluetooth (controls are the shell's quick-settings tile and page; the
+  # shell is BlueZ's pairing agent, so devices that need a PIN pair there too).
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
