@@ -157,6 +157,8 @@
           host = "nixos-niri";
           revision = self.rev or self.dirtyRev or null;
           entries = map one registry;
+          # added from Settings but gone from this nixpkgs: left out of the build
+          missingPackages = sys.config.amane.missingPackages;
           # what this repo's files install system-wide (not NixOS's own
           # defaults), each with the file that lists it, for the Apps page
           systemPackages =

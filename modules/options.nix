@@ -9,6 +9,12 @@
 let
   cfg = config.amane;
   t = lib.types;
+  # a package added from Settings, or null when nixpkgs no longer has it:
+  # a removed package is usually an alias that throws ("… has been renamed")
+  resolve = name:
+    let r = builtins.tryEval (lib.attrByPath (lib.splitString "." name) null pkgs);
+    in if r.success then r.value else null;
+  missing = builtins.filter (name: resolve name == null) cfg.packages;
   seconds = default: what: lib.mkOption {
     type = t.ints.unsigned;
     inherit default;
@@ -83,6 +89,12 @@ in
       default = [ ];
       description = "nixpkgs attribute paths (dotted) added from Shell Settings → Apps.";
     };
+    missingPackages = lib.mkOption {
+      type = t.listOf t.str;
+      readOnly = true;
+      default = missing;
+      description = "The `packages` this nixpkgs doesn't have (any more): left out, with a warning.";
+    };
     updates.check = lib.mkOption {
       type = t.enum [ "daily" "weekly" "never" ];
       default = "daily";
@@ -99,8 +111,13 @@ in
     systemd.services.avahi-daemon.wantedBy =
       lib.mkIf (cfg.services."avahi-daemon".onDemand && config.services.avahi.enable) (lib.mkForce [ ]);
 
+    # one nixpkgs dropped is left out with a warning rather than failing the
+    # build; Shell Settings → Apps shows it as gone (amaneSettings.missingPackages)
     environment.systemPackages =
-      map (name: lib.getAttrFromPath (lib.splitString "." name) pkgs) cfg.packages;
+      builtins.filter (p: p != null) (map resolve cfg.packages);
+    warnings = map
+      (name: "amane.packages: ${name} isn't in this nixpkgs any more (renamed or removed); remove it in Shell Settings → Apps.")
+      missing;
 
     # the update check, as a user timer (it needs the session bus for the
     # toast and the user's nix settings); `systemctl --user start
