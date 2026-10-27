@@ -23,6 +23,7 @@
     ./modules/security.nix
     ./modules/apps.nix
     ./modules/managed.nix   # settings Shell Settings owns (managed/settings.json)
+    ./modules/options.nix   # our own options those settings can point at (amane.*)
 
     # ArtCraft creative apps (vectorcraft, figcraft, photocraft, designcraft).
     ./artcraft.nix

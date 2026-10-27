@@ -120,12 +120,29 @@
               default = opt.default or null;
               type = opt.type.description;
               description = opt.description or "";
-              setIn = map (d: strip d.file) opt.definitionsWithLocations;
+              # only real definitions: an unset option's default counts as one
+              # at its declaration, at mkOptionDefault's priority (1500)
+              setIn = if (opt.highestPrio or 0) >= 1500 then [ ] else map (d: strip d.file) opt.definitionsWithLocations;
             };
+          # a package's name without instantiating it; the odd one that
+          # can't say is "?"
+          safe = e: let r = builtins.tryEval e; in if r.success then r.value else "?";
         in {
           host = "nixos-niri";
           revision = self.rev or self.dirtyRev or null;
           entries = map one registry;
+          # what this repo's files install system-wide (not NixOS's own
+          # defaults), each with the file that lists it, for the Apps page
+          systemPackages =
+            let
+              defs = sys.options.environment.systemPackages.definitionsWithLocations;
+              ours = builtins.filter (d: lib.hasPrefix "${self}/" d.file) defs;
+              named = file: p: {
+                name = safe (p.pname or p.name or "?");
+                version = safe (p.version or "");
+                inherit file;
+              };
+            in builtins.concatMap (d: map (named (strip d.file)) d.value) ours;
         };
 
       # Per-project dev toolchain: `nix develop` (or direnv) drops you into a
