@@ -138,22 +138,9 @@
         before_sleep_cmd = "loginctl lock-session";
         after_sleep_cmd = "niri msg action power-on-monitors";
       };
-      listener = [
-        {
-          timeout = 180;                         # 3 min: dim OLED
-          on-timeout = "brightnessctl -s set 10%";
-          on-resume = "brightnessctl -r";
-        }
-        {
-          timeout = 240;                         # 4 min: lock the screen
-          on-timeout = "loginctl lock-session";
-        }
-        {
-          timeout = 300;                         # 5 min: DPMS off
-          on-timeout = "niri msg action power-off-monitors";
-          on-resume = "niri msg action power-on-monitors";
-        }
-      ];
+      # The listeners (dim, lock, screen off) come from amane.idle.* in
+      # managed/settings.json (Shell Settings → Power & Lock); see
+      # modules/options.nix. Don't add any here: the list would be merged.
     };
   };
 

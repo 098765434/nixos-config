@@ -5,10 +5,9 @@
   # Tailscale VPN (run `sudo tailscale up` once after install to authenticate).
   # Switched on as `tailscale` in managed/settings.json (Shell Settings).
 
-  # SSH server. Installed but not started at boot, to keep idle RAM down:
-  # `sudo systemctl start sshd` when you need to log in from elsewhere.
-  services.openssh.enable = true;
-  systemd.services.sshd.wantedBy = lib.mkForce [ ];
+  # SSH server: `openssh` in managed/settings.json (Shell Settings → Services),
+  # with `sshdOnDemand` keeping it installed but not started at boot, to keep
+  # idle RAM down: `sudo systemctl start sshd` (or Start there) when needed.
 
   # Syncthing — continuously syncs the Obsidian vault with the "pi5" server.
   # DECLARATIVE: the devices/folders below are the source of truth. With
@@ -16,8 +15,8 @@
   # the web UI is wiped on the next rebuild — manage sync topology HERE, not the
   # GUI. On a fresh install this pulls the whole vault down from pi5, so it also
   # doubles as the vault's restore path.
+  # Switched on as `syncthing` in managed/settings.json (Shell Settings).
   services.syncthing = {
-    enable = true;
     user = "ocbk";
     group = "users";
     configDir = "/home/ocbk/.config/syncthing";
@@ -92,15 +91,14 @@
     };
   };
 
-  # mDNS / network discovery (KDE Connect, printers, .local names).
+  # mDNS / network discovery (KDE Connect, printers, .local names). Switched
+  # on as `avahi` in managed/settings.json (Shell Settings); `avahiOnDemand`
+  # keeps it from starting at boot (its socket still starts it on the first
+  # .local lookup or printer/network browse).
   services.avahi = {
-    enable = true;
     nssmdns4 = true;
     openFirewall = true;
   };
-  # Not started at boot; its socket still starts it on the first .local
-  # lookup or printer/network browse.
-  systemd.services.avahi-daemon.wantedBy = lib.mkForce [ ];
 
   # Encrypted DNS via systemd-resolved + DNS-over-TLS. "opportunistic" uses TLS
   # when the resolver supports it and falls back otherwise (won't break networks

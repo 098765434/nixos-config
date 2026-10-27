@@ -17,6 +17,7 @@ modules/
   services.nix         tailscale, ssh, avahi, gvfs, gnome-keyring
   apps.nix             system packages
   managed.nix          settings Shell Settings owns (reads managed/settings.json) + its activate helper
+  options.nix          our own options (amane.*): idle timeouts, on-demand units, packages from Settings
 managed/
   registry.nix         which settings Shell Settings may own, and their NixOS option paths
   settings.json        their values — written by Shell Settings, or by hand
@@ -231,3 +232,11 @@ the system as your user, shows what changes, then activates it through polkit
 switch it commits **only** `managed/settings.json` as `settings: …` and never pushes. Undo one
 with `git revert`; `nix eval --json .#amaneSettings` shows what Settings sees. Details:
 amane-shell's `docs/integration/nixos.md`.
+
+What lives in `managed/settings.json` today: the time zone; the services on the Services page
+(SSH, Avahi, Syncthing, KDE Connect, Flatpak, fprintd, fwupd, Bluetooth, Tailscale, Sunshine) and
+whether SSH/Avahi start at boot; the hypridle idle timeouts (Power & Lock, through `amane.idle.*`
+in `modules/options.nix`); packages added from Settings → Apps (`amane.packages`, nixpkgs
+attribute paths); the boot entries kept. Settings → Software Update checks for updates by
+building against a fresh lock first; applying one writes `flake.lock` and commits it with
+`managed/settings.json` as `update: …`.

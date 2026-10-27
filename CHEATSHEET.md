@@ -29,6 +29,10 @@ nix flake update nixpkgs               # bump just one
 Each of these only changes a file (`flake.lock` or `artcraft-sources.json`).
 Nothing takes effect until the next `nixos-rebuild switch`.
 
+Or from the desktop: Shell Settings → Software Update → **Check for Updates** builds the
+updated system first and shows what changes; **Apply Now** switches, writes `flake.lock` and
+commits it (`update: …`). **Update** on one input bumps just that one.
+
 Updating a single ArtCraft app without the script: edit
 `artcraft-sources.json`, change the `version`, replace the `hash` with
 `sha256-0000000000000000000000000000000000000000000=`, rebuild — Nix prints
@@ -67,8 +71,9 @@ Validate niri KDL before relying on the auto-reload: `niri validate ~/.config/ni
 
 ## Installing apps
 
-**From nixpkgs** — add to `environment.systemPackages` in [modules/apps.nix](modules/apps.nix),
-then rebuild.
+**From nixpkgs** — Shell Settings → Apps → search and **Add** (goes into
+`managed/settings.json` as `packages`, applied with the next Apply), or add to
+`environment.systemPackages` in [modules/apps.nix](modules/apps.nix) and rebuild.
 
 **One-shot, no install** — `nix run nixpkgs#htop` or `nix shell nixpkgs#ripgrep -c rg --version`.
 

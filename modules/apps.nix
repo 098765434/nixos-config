@@ -8,7 +8,7 @@
     wofi             # launcher (Mod+D)
     # swaylock is provided by home-manager (programs.swaylock) with its config
     waybar           # status bar
-    hypridle         # idle management (needs a hypridle.conf to act)
+    hypridle         # idle management (configured by home-manager, timeouts in managed/)
     playerctl        # media keys
     brightnessctl    # brightness keys
     wl-clipboard     # Wayland clipboard (also feeds cliphist)

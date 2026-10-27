@@ -1,5 +1,19 @@
 {
+  "avahi": true,
+  "avahiOnDemand": true,
+  "bluetooth": true,
   "bootEntries": 10,
+  "dimAfter": 180,
+  "flatpak": true,
+  "fprintd": true,
+  "fwupd": true,
+  "kdeconnect": true,
+  "lockAfter": 240,
+  "openssh": true,
+  "packages": [],
+  "screenOffAfter": 300,
+  "sshdOnDemand": true,
+  "syncthing": true,
   "tailscale": true,
   "timeZone": "Europe/Oslo"
 }

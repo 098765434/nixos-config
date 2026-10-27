@@ -18,17 +18,17 @@
 
   # Bluetooth (controls are the shell's quick-settings tile and page; the
   # shell is BlueZ's pairing agent, so devices that need a PIN pair there too).
+  # Switched on as `bluetooth` in managed/settings.json (Shell Settings).
   hardware.bluetooth = {
-    enable = true;
     powerOnBoot = true;
   };
 
-  # Fingerprint reader. After install, enroll with: fprintd-enroll
-  services.fprintd.enable = true;
+  # Fingerprint reader: `fprintd` in managed/settings.json (Shell Settings).
+  # After install, enroll with: fprintd-enroll
 
   # Power management (don't also enable TLP), firmware updates, zram, TRIM.
   services.power-profiles-daemon.enable = true;
-  services.fwupd.enable = true;
+  # fwupd: `fwupd` in managed/settings.json (Shell Settings → Services).
   # No background metadata refresh: that timer is what wakes fwupd and leaves
   # it resident. Run `fwupdmgr refresh && fwupdmgr update` by hand instead.
   systemd.timers.fwupd-refresh.wantedBy = lib.mkForce [ ];

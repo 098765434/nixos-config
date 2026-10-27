@@ -33,13 +33,13 @@
   # GTK/GNOME apps need dconf to store settings.
   programs.dconf.enable = true;
 
-  # KDE Connect (opens its own firewall ports).
-  programs.kdeconnect.enable = true;
+  # KDE Connect (opens its own firewall ports): `kdeconnect` in
+  # managed/settings.json (Shell Settings → Services).
 
   # Flatpak — chiefly your browser (Zen). After first boot:
   #   flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
   #   flatpak install flathub app.zen_browser.zen
-  services.flatpak.enable = true;
+  # Switched on as `flatpak` in managed/settings.json (Shell Settings).
 
   # AppImage support (FHS sandbox) — runs the ArtCraft AppImages.
   programs.appimage = {
