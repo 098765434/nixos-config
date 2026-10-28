@@ -6,4 +6,5 @@ output "eDP-1" {
     scale 1.75
     transform "normal"
     variable-refresh-rate on-demand=true
+    hdr
 }
