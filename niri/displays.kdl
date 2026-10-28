@@ -1,0 +1,9 @@
+// Written by Shell Settings (Displays), which reads it back: edits by
+// hand may be lost. niri's config.kdl includes it.
+
+output "eDP-1" {
+    mode "2880x1800@120.000"
+    scale 1.75
+    transform "normal"
+    variable-refresh-rate on-demand=true
+}

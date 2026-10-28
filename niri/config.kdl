@@ -48,12 +48,14 @@ input {
 // NIXOS-NOTE: this output block targets your real OLED laptop panel. In a VM
 // the virtual display has a different name, so niri ignores this block thericone.
 // After first boot, run `niri msg outputs` to confirm the name.
-output "eDP-1" {
-    mode "2880x1800@120.000"
-    scale 1.75
-    transform "normal"
-    variable-refresh-rate on-demand=true
-}
+// Displays are set in Shell Settings, which writes this file:
+include optional=true "/home/ocbk/nixos-config/niri/displays.kdl"
+// output "eDP-1" {
+//     mode "2880x1800@120.000"
+//     scale 1.75
+//     transform "normal"
+//     variable-refresh-rate on-demand=true
+// }
 
 layout {
     empty-workspace-above-first
