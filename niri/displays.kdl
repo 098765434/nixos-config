@@ -7,5 +7,5 @@ output "eDP-1" {
     transform "normal"
     variable-refresh-rate on-demand=true
     hdr
-    sdr-brightness 292
+    sdr-brightness 372
 }
