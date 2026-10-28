@@ -339,6 +339,24 @@ layer-rule {
     }
 }
 
+// On-screen display: the capsule that shows a level or a switch as a key
+// changes it, above the bottom edge, on a surface as big as the capsule. It
+// frosts itself (a blur shape, in small glass); the rule rounds it and gives
+// it niri's shadow.
+layer-rule {
+    match namespace="^amane\\.osd$"
+    geometry-corner-radius 26
+    shadow {
+        on
+        softness 48
+        offset x=0 y=8
+        color "#00000073"
+    }
+    background-effect {
+        xray false
+    }
+}
+
 // An amane app's windows: frosted behind, the window drawing its own tint
 // over the frost (the window material), and its popups like the shell's.
 window-rule {
@@ -570,18 +588,28 @@ binds {
 
     Super+Alt+S allow-when-locked=true hotkey-overlay-title=null { spawn-sh "pkill orca || exec orca"; }
 
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
-    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
-    XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+    // the amane-shell OSD changes the level and shows it; the plain commands
+    // are the fallback unless the shell answers ok. Shift steps by 1%.
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nvolume\\nup\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+ -l 1.0"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nvolume\\ndown\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-"; }
+    Shift+XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nvolume\\nup\\nfine\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.01+ -l 1.0"; }
+    Shift+XF86AudioLowerVolume allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nvolume\\ndown\\nfine\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.01-"; }
+    XF86AudioMute        allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nvolume\\nmute\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+    XF86AudioMicMute     allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nmic\\nmute\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
     XF86AudioPlay        allow-when-locked=true { spawn-sh "playerctl play-pause"; }
     XF86AudioStop        allow-when-locked=true { spawn-sh "playerctl stop"; }
     XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
     XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
 
-    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nbrightness\\nup\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || brightnessctl --class=backlight set +5%"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nbrightness\\ndown\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || brightnessctl --class=backlight set 5%-"; }
+    Shift+XF86MonBrightnessUp allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nbrightness\\nup\\nfine\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || brightnessctl --class=backlight set +1%"; }
+    Shift+XF86MonBrightnessDown allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nbrightness\\ndown\\nfine\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || brightnessctl --class=backlight set 1%-"; }
+    // keyboards that send these; a ThinkPad's Fn+Space is the firmware's, and the OSD sees it anyway
+    XF86KbdBrightnessUp allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nkbd-light\\nup\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || true"; }
+    XF86KbdBrightnessDown allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nkbd-light\\ndown\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || true"; }
+    XF86KbdLightOnOff allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nkbd-light\\ncycle\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || true"; }
 
     // Amane context menu: arm the fullscreen hit-catcher, then right-click
     // anywhere to open the menu (or Esc / left-click to cancel).
