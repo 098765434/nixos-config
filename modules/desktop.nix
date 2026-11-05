@@ -36,6 +36,17 @@
   # KDE Connect (opens its own firewall ports): `kdeconnect` in
   # managed/settings.json (Shell Settings → Services).
 
+  # The phone's screen and camera beside it (amane-mirror, scrcpy's server
+  # over adb): Wireless debugging announces itself over mDNS, which the
+  # shell listens for, and the phone's camera is a loopback webcam named
+  # "Phone Camera" (video call apps list it; exclusive_caps lets browsers).
+  networking.firewall.allowedUDPPorts = [ 5353 ];
+  boot.extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
+  boot.kernelModules = [ "v4l2loopback" ];
+  boot.extraModprobeConfig = ''
+    options v4l2loopback exclusive_caps=1 card_label="Phone Camera"
+  '';
+
   # Flatpak — chiefly your browser (Zen). After first boot:
   #   flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
   #   flatpak install flathub app.zen_browser.zen
