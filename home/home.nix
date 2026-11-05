@@ -31,17 +31,14 @@
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/nixos-config/waybar/style.css";
 
-  # KDE Connect stays installed (programs.kdeconnect opens its ports) but its
-  # daemon doesn't start at login: this Hidden= entry masks the system
-  # autostart. Open the KDE Connect app to start it when you need the phone.
-  xdg.configFile."autostart/org.kde.kdeconnect.daemon.desktop".text = ''
-    [Desktop Entry]
-    Type=Application
-    Name=KDE Connect
-    Hidden=true
-  '';
-  # Same for nm-applet, which also has a system autostart entry besides the
-  # (now disabled) niri spawn: the shell's network tiles replace it.
+  # KDE Connect's daemon starts at login from its own system autostart entry
+  # (present while `kdeconnect` is on in Shell Settings → Services, which also
+  # opens its ports). amane-shell draws all of its UI: the Quick Settings Phone
+  # page and amane-messages.
+  #
+  # nm-applet has a system autostart entry besides the (now disabled) niri
+  # spawn; this Hidden= entry masks it, since the shell's network tiles
+  # replace it.
   xdg.configFile."autostart/nm-applet.desktop".text = ''
     [Desktop Entry]
     Type=Application
