@@ -145,8 +145,11 @@ in
     home-manager.users.ocbk.services.hypridle.settings.listener =
       lib.optional (cfg.idle.dimAfter > 0) {
         timeout = cfg.idle.dimAfter;
-        on-timeout = "brightnessctl -s set 10%";
-        on-resume = "brightnessctl -r";
+        # through the shell, so it dims in HDR too (the panel ignores its
+        # backlight there); brightnessctl when the shell isn't answering.
+        # no $XDG_RUNTIME_DIR: hyprlang reads $NAME as its own variable
+        on-timeout = ''[ "$(printf 'osd\nbrightness\ndim\n10\n' | nc -U -N /run/user/$(id -u)/amane.sock)" = ok ] || brightnessctl -s set 10%'';
+        on-resume = ''[ "$(printf 'osd\nbrightness\nrestore\n' | nc -U -N /run/user/$(id -u)/amane.sock)" = ok ] || brightnessctl -r'';
       }
       ++ lib.optional (cfg.idle.lockAfter > 0) {
         timeout = cfg.idle.lockAfter;
