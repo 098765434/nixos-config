@@ -175,6 +175,33 @@
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
+  # --- Assistant: amane-assistant (Spotlight's commands, typed or spoken) ---
+  # Cactus (Needle 3 + Whistle) on the CPU, models from the store; the shell
+  # talks to it over $XDG_RUNTIME_DIR/amane-assistant.sock and works without
+  # it. Kept to Unix sockets: it reads everything here and never needs the
+  # network (Cactus has no network code; this makes sure). The microphone is
+  # PulseAudio's socket, only while Mod+Shift+Space listens.
+  systemd.user.services.amane-assistant = {
+    Unit = {
+      Description = "amane-shell assistant (Cactus)";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${inputs.amane-shell.packages.${pkgs.system}.default}/bin/amane-assistant";
+      Restart = "on-failure";
+      RestrictAddressFamilies = [ "AF_UNIX" ];
+      NoNewPrivileges = true;
+      LockPersonality = true;
+      MemoryMax = "1G";
+      Environment = [
+        "CACTUS_TELEMETRY=0"
+        "DO_NOT_TRACK=1"
+      ];
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
   # --- Wallpaper: swaybg on niri's background layer ---
   # A background layer surface is also what niri's xray blur shows behind the
   # bar's frosted panels. Change the picture here and rebuild.
