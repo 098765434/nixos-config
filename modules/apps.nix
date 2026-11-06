@@ -5,6 +5,7 @@
   environment.systemPackages = (with pkgs; [
     # --- niri session companions (referenced by niri config.kdl) ---
     foot             # terminal (Mod+Return / Mod+T)
+    xdg-terminal-exec # the terminal Default Apps picks, for Mod+T and apps that ask for one
     wofi             # launcher (Mod+D)
     # swaylock is provided by home-manager (programs.swaylock) with its config
     waybar           # status bar

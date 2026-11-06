@@ -641,9 +641,10 @@ materials {
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
-    // Terminal = foot, launcher = wofi (matched to your Arch binds).
-    Mod+Return hotkey-overlay-title="Open a Terminal: foot" { spawn "foot"; }
-    Mod+T hotkey-overlay-title="Open a Terminal: foot" { spawn "foot"; }
+    // the terminal Shell Settings > Default Apps picks (xdg-terminal-exec), foot without it;
+    // launcher = wofi (matched to your Arch binds).
+    Mod+Return hotkey-overlay-title="Open a Terminal" { spawn-sh "xdg-terminal-exec || foot"; }
+    Mod+T hotkey-overlay-title="Open a Terminal" { spawn-sh "xdg-terminal-exec || foot"; }
     Mod+D hotkey-overlay-title="Run an Application: wofi" { spawn "wofi" "--show" "drun"; }
     // the amane-shell launcher, toggled over the shell's IPC socket
     Mod+Space hotkey-overlay-title="App Launcher: amane" { spawn "sh" "-c" "printf 'launcher\\ntoggle\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock"; }
