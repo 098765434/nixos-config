@@ -171,6 +171,9 @@
     Service = {
       ExecStart = "${inputs.amane-shell.packages.${pkgs.system}.default}/bin/amane-shell";
       Restart = "on-failure";
+      # it passes passwords from rbw into fields: no core dump of it, or of the rbw agent
+      # it starts (which inherits this), may land on disk
+      LimitCORE = 0;
     };
     Install.WantedBy = [ "graphical-session.target" ];
   };
