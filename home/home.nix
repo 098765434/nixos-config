@@ -175,6 +175,25 @@
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
+  # --- Drop: amane-drop (a Dropzone-style status bar app) ---
+  # Its own unit, so it isn't in amane-shell's cgroup and a restart of the
+  # shell doesn't take it down; it puts its item back in the bar once the
+  # shell's org.amane.StatusBar1 is there again. "Quit Drop" in its menu exits
+  # cleanly, which leaves it stopped until the next login or Mod+Shift+D.
+  # curl, secret-tool and wl-copy come with the package's wrapper.
+  systemd.user.services.amane-drop = {
+    Unit = {
+      Description = "amane-drop (Drop: a grid of folders, apps and uploads)";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${inputs.amane-shell.packages.${pkgs.system}.default}/bin/amane-drop";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
   # --- Assistant: amane-assistant (Spotlight's commands, typed or spoken) ---
   # Cactus (Needle 3 + Whistle) on the CPU, models from the store; the shell
   # talks to it over $XDG_RUNTIME_DIR/amane-assistant.sock and works without

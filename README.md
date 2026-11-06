@@ -21,7 +21,7 @@ modules/
 managed/
   registry.nix         which settings Shell Settings may own, and their NixOS option paths
   settings.json        their values — written by Shell Settings, or by hand
-home/home.nix          home-manager: niri/waybar/foot/wofi/amane-shell/hypridle/direnv
+home/home.nix          home-manager: niri/waybar/foot/wofi/amane-shell/amane-drop/hypridle/direnv
 niri/config.kdl        niri config (symlinked into ~/.config via mkOutOfStoreSymlink — edit live, no rebuild)
 waybar/                waybar config + style (also symlinked live; adapted from mechakotik/dots)
 artcraft.nix           ArtCraft apps (vectorcraft/figcraft/photocraft/designcraft)
@@ -185,7 +185,7 @@ flatpak install flathub app.zen_browser.zen
 ## Post-build checks
 
 - `niri validate ~/.config/niri/config.kdl`
-- `systemctl --user status amane-shell hypridle amane-update-check.timer`
+- `systemctl --user status amane-shell amane-drop hypridle amane-update-check.timer`
 - waybar shows workspaces (confirms nixpkgs waybar has the niri module)
 - `nix develop` gives `rustc`, `cargo`, `java`
 
