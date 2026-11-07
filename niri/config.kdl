@@ -685,10 +685,6 @@ binds {
     XF86KbdBrightnessDown allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nkbd-light\\ndown\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || true"; }
     XF86KbdLightOnOff allow-when-locked=true { spawn-sh "[ \"$(printf 'osd\\nkbd-light\\ncycle\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock)\" = ok ] || true"; }
 
-    // Amane context menu: arm the fullscreen hit-catcher, then right-click
-    // anywhere to open the menu (or Esc / left-click to cancel).
-    Mod+Shift+M hotkey-overlay-title="Arm Context Menu" { spawn-sh "printf 'arm\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock"; }
-
     Mod+O repeat=false { toggle-overview; }
     Mod+Q repeat=false { close-window; }
 
