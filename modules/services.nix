@@ -60,6 +60,9 @@
   programs.fuse.userAllowOther = true;
 
   systemd.services.rclone-desktop = {
+    # off until the laptop has /home/ocbk/.ssh/id_ed25519 (see above); without
+    # it every start fails and a switch reports the unit as failed
+    enable = false;
     description = "rclone mount: debian desktop home (SFTP/Tailscale) -> /home/ocbk/Cloud";
     after = [ "network-online.target" "tailscaled.service" ];
     wants = [ "network-online.target" ];
