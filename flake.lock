@@ -28,11 +28,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1794037097,
-        "narHash": "sha256-cDbk5X42jeHpQp06IkkpnCoWo4xJKQp05Hfx/4FYNXY=",
+        "lastModified": 1794040445,
+        "narHash": "sha256-ZAUjygASBHO4wBF6pLP8nYg4vZogPu864082ZymdM6o=",
         "owner": "098765434",
         "repo": "amane-shell",
-        "rev": "2043ff2bc607bb066c56a10e21f1a667a84146d9",
+        "rev": "7b6f711e1fb8a3e6ef20c796cbe36999f1a1a40a",
         "type": "github"
       },
       "original": {
