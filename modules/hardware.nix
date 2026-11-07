@@ -28,6 +28,9 @@
 
   # Power management (don't also enable TLP), firmware updates, zram, TRIM.
   services.power-profiles-daemon.enable = true;
+  # UPower: the battery and device batteries as signals, so the shell
+  # doesn't read the battery through the embedded controller every 5 s.
+  services.upower.enable = true;
   # fwupd: `fwupd` in managed/settings.json (Shell Settings → Services).
   # No background metadata refresh: that timer is what wakes fwupd and leaves
   # it resident. Run `fwupdmgr refresh && fwupdmgr update` by hand instead.
