@@ -46,7 +46,7 @@
     Hidden=true
   '';
 
-  # macOS-style app icons, each named after an app's Icon= key. ~/.local/share
+  # The shell's own app icons, each named after an app's Icon= key. ~/.local/share
   # is searched before the system dirs, so these replace the apps' own icons.
   # The ArtCraft apps wear their Adobe equivalents (photocraft = Photoshop,
   # vectorcraft = Illustrator, designcraft = InDesign, figcraft = Figma).
@@ -178,7 +178,7 @@
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
-  # --- Drop: amane-drop (a Dropzone-style status bar app) ---
+  # --- Drop: amane-drop (a drop shelf in the status bar) ---
   # Its own unit, so it isn't in amane-shell's cgroup and a restart of the
   # shell doesn't take it down; it puts its item back in the bar once the
   # shell's org.amane.StatusBar1 is there again. "Quit Drop" in its menu exits
@@ -197,7 +197,7 @@
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
-  # --- Assistant: amane-assistant (Spotlight's commands, typed or spoken) ---
+  # --- Assistant: amane-assistant (the launcher's commands, typed or spoken) ---
   # Cactus (Needle 3 + Whistle) on the CPU, models from the store; the shell
   # talks to it over $XDG_RUNTIME_DIR/amane-assistant.sock and works without
   # it. Kept to Unix sockets: it reads everything here and never needs the

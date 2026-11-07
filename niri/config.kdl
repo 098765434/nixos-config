@@ -167,8 +167,8 @@ window-rule {
 }
 
 // >>> amane layer-rules (generated from shell/niri-layer-rule.kdl — do not edit by hand)
-// Status bar: one uniform frosted strip along the bottom, macOS 27's toolbar:
-// frost, the standard material without a lens. It reserves its zone, so only
+// Status bar: one uniform frosted strip along its edge, in the standard
+// material without a lens (frost). It reserves its zone, so only
 // the wallpaper is behind it and niri's xray blur is enough. Its xdg-popups
 // (tooltips, Do Not Disturb's menu) are frosted cards.
 layer-rule {
@@ -648,7 +648,7 @@ binds {
     Mod+D hotkey-overlay-title="Run an Application: wofi" { spawn "wofi" "--show" "drun"; }
     // the amane-shell launcher, toggled over the shell's IPC socket
     Mod+Space hotkey-overlay-title="App Launcher: amane" { spawn "sh" "-c" "printf 'launcher\\ntoggle\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock"; }
-    // Spotlight's assistant: press, say a command, press again (niri has no
+    // The launcher's assistant: press, say a command, press again (niri has no
     // release binds, so it toggles)
     Mod+Shift+Space hotkey-overlay-title="Assistant: listen" { spawn "sh" "-c" "printf 'assistant\\nlisten\\ntoggle\\n' | nc -U -N $XDG_RUNTIME_DIR/amane.sock"; }
     // Drop's grid (amane-drop), under its item; starts its service when it isn't running
