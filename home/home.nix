@@ -221,7 +221,17 @@
         "DO_NOT_TRACK=1"
       ];
     };
-    Install.WantedBy = [ "graphical-session.target" ];
+    # Started by its socket (below) at the shell's first request, and gone
+    # again after 5 minutes with nothing asked (AMANE_ASSISTANT_IDLE), which
+    # gives its models' 80-140 MB back.
+  };
+  systemd.user.sockets.amane-assistant = {
+    Unit.Description = "amane-shell assistant's socket";
+    Socket = {
+      ListenStream = "%t/amane-assistant.sock";
+      SocketMode = "0600";
+    };
+    Install.WantedBy = [ "sockets.target" ];
   };
 
   # --- Wallpaper: swaybg on niri's background layer ---

@@ -12,7 +12,11 @@
   # Your niri config.kdl is managed per-user in ./home via a mkOutOfStoreSymlink.
   programs.niri = {
     enable = true;
-    package = inputs.niri-fork.packages.${pkgs.system}.niri;
+    # One codegen unit: a few percent less CPU per frame and a smaller binary,
+    # for a slower build. Set here so the fork's Cargo.toml stays upstream's.
+    package = inputs.niri-fork.packages.${pkgs.system}.niri.overrideAttrs (old: {
+      env = (old.env or { }) // { CARGO_PROFILE_RELEASE_CODEGEN_UNITS = "1"; };
+    });
   };
 
   # greetd + tuigreet: tiny TTY greeter that lists sessions (pick "niri").
