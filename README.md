@@ -16,12 +16,12 @@ modules/
   gaming.nix           steam, gamemode
   services.nix         tailscale, ssh, avahi, gvfs, gnome-keyring
   apps.nix             system packages
-  managed.nix          settings Shell Settings owns (reads managed/settings.json) + its activate helper
+  managed.nix          settings Emaki Settings owns (reads managed/settings.json) + its activate helper
   options.nix          our own options (amane.*): idle timeouts, on-demand units, packages from Settings, the update check timer
 managed/
-  registry.nix         which settings Shell Settings may own, and their NixOS option paths
-  settings.json        their values — written by Shell Settings, or by hand
-home/home.nix          home-manager: niri/waybar/foot/wofi/amane-shell/amane-drop/hypridle/direnv
+  registry.nix         which settings Emaki Settings may own, and their NixOS option paths
+  settings.json        their values — written by Emaki Settings, or by hand
+home/home.nix          home-manager: niri/waybar/foot/wofi/emaki/emaki-drop/hypridle/direnv
 niri/config.kdl        niri config (symlinked into ~/.config via mkOutOfStoreSymlink — edit live, no rebuild)
 waybar/                waybar config + style (also symlinked live; adapted from mechakotik/dots)
 artcraft.nix           ArtCraft apps (vectorcraft/figcraft/photocraft/designcraft)
@@ -185,7 +185,7 @@ flatpak install flathub app.zen_browser.zen
 ## Post-build checks
 
 - `niri validate ~/.config/niri/config.kdl`
-- `systemctl --user status amane-shell amane-drop hypridle amane-update-check.timer`
+- `systemctl --user status emaki emaki-drop hypridle emaki-update-check.timer`
 - waybar shows workspaces (confirms nixpkgs waybar has the niri module)
 - `nix develop` gives `rustc`, `cargo`, `java`
 
@@ -222,30 +222,30 @@ flatpak install flathub app.zen_browser.zen
   waybar + wofi + mako).
 - Optional: encrypted swap partition if you want hibernation (currently zram only).
 
-## Shell Settings
+## Emaki Settings
 
 The shell's settings app has a **System** group that manages this repo. It never edits the
 hand-written `.nix` files: it writes `managed/settings.json` (the keys are listed in
 `managed/registry.nix`, and `modules/managed.nix` turns them into option definitions), builds
 the system as your user, shows what changes, then activates it through polkit
-(`amane-nixos-activate`, exit 2 on anything but a built NixOS system). After a successful
+(`emaki-nixos-activate`, exit 2 on anything but a built NixOS system). After a successful
 switch it commits **only** `managed/settings.json` as `settings: …` and never pushes. Undo one
-with `git revert`; `nix eval --json .#amaneSettings` shows what Settings sees. Details:
-amane-shell's `docs/integration/nixos.md`.
+with `git revert`; `nix eval --json .#emakiSettings` shows what Settings sees. Details:
+emaki's `docs/developer/integration/nixos.md`.
 
 What lives in `managed/settings.json` today: the time zone; the computer's name, language and
 keyboard layout/variant (General; the console keymap follows the layout); the services on the
 Services page (SSH, Avahi, Syncthing, KDE Connect, Flatpak, fprintd, fwupd, Bluetooth, Tailscale,
 Sunshine) and whether SSH/Avahi start at boot; the hypridle idle timeouts (Power & Lock, through
-`amane.idle.*` in `modules/options.nix`); packages added from Settings → Apps (`amane.packages`,
+`emaki.idle.*` in `modules/options.nix`); packages added from Settings → Apps (`emaki.packages`,
 nixpkgs attribute paths); the boot entries kept; how often to check for updates. Settings →
 Software Update checks for updates by building against a fresh lock first; applying one writes
 `flake.lock` and commits it with `managed/settings.json` as `update: …`.
 
 A setting a hand-written file still sets shows locked in Settings, with the line, and **Move to
 Settings…** comments that line out and commits it with `settings.json` as `move: …` — the one
-edit Settings makes to a `.nix` file. The scheduled check (`amane-update-check`, a user timer
-from `amane.updates.check`: daily unless changed) relocks beside the repo, never builds, and
+edit Settings makes to a `.nix` file. The scheduled check (`emaki-update-check`, a user timer
+from `emaki.updates.check`: daily unless changed) relocks beside the repo, never builds, and
 notifies through the shell when inputs moved; the toast opens Software Update. The shell itself
-is the polkit agent (`amane-shell` registers it; the niri flake's polkit-kde service is off), so
+is the polkit agent (`emaki` registers it; the niri flake's polkit-kde service is off), so
 every password prompt is the shell's own alert.

@@ -18,12 +18,12 @@
 
   # Bluetooth (controls are the shell's quick-settings tile and page; the
   # shell is BlueZ's pairing agent, so devices that need a PIN pair there too).
-  # Switched on as `bluetooth` in managed/settings.json (Shell Settings).
+  # Switched on as `bluetooth` in managed/settings.json (Emaki Settings).
   hardware.bluetooth = {
     powerOnBoot = true;
   };
 
-  # Fingerprint reader: `fprintd` in managed/settings.json (Shell Settings).
+  # Fingerprint reader: `fprintd` in managed/settings.json (Emaki Settings).
   # After install, enroll with: fprintd-enroll
 
   # Power management (don't also enable TLP), firmware updates, zram, TRIM.
@@ -31,7 +31,7 @@
   # UPower: the battery and device batteries as signals, so the shell
   # doesn't read the battery through the embedded controller every 5 s.
   services.upower.enable = true;
-  # fwupd: `fwupd` in managed/settings.json (Shell Settings → Services).
+  # fwupd: `fwupd` in managed/settings.json (Emaki Settings → Services).
   # No background metadata refresh: that timer is what wakes fwupd and leaves
   # it resident. Run `fwupdmgr refresh && fwupdmgr update` by hand instead.
   systemd.timers.fwupd-refresh.wantedBy = lib.mkForce [ ];

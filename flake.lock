@@ -20,27 +20,6 @@
         "type": "github"
       }
     },
-    "amane-shell": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "rust-overlay": "rust-overlay"
-      },
-      "locked": {
-        "lastModified": 1794172237,
-        "narHash": "sha256-YAFLOykQ/RD9T9Wm7MLaEJKBtHGqDkrCrhZtm9E+jtM=",
-        "owner": "098765434",
-        "repo": "amane-shell",
-        "rev": "91536fb736d13f969d1951da880a5beedb3a3768",
-        "type": "github"
-      },
-      "original": {
-        "owner": "098765434",
-        "repo": "amane-shell",
-        "type": "github"
-      }
-    },
     "crane": {
       "locked": {
         "lastModified": 1731098351,
@@ -73,6 +52,27 @@
       "original": {
         "owner": "nix-community",
         "repo": "disko",
+        "type": "github"
+      }
+    },
+    "emaki": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay"
+      },
+      "locked": {
+        "lastModified": 1794179059,
+        "narHash": "sha256-+z9Kq65M5ei7nUzOVJKK//l6JtdDHYxMycfCyuaorjk=",
+        "owner": "emaki-desktop",
+        "repo": "emaki",
+        "rev": "963bddffd3c7c9a56bc4e813d8a16fdcde8bf41f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "emaki-desktop",
+        "repo": "emaki",
         "type": "github"
       }
     },
@@ -213,16 +213,16 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1794162241,
-        "narHash": "sha256-SwqlkITDJ7xJ/heT8V/GesQEX/sfCNWy1N234hX/36E=",
-        "owner": "098765434",
+        "lastModified": 1794178578,
+        "narHash": "sha256-GyS3wU4nceZzU7ByIU9zGA0EEZd/jypBjW5zbwUWCi8=",
+        "owner": "emaki-desktop",
         "repo": "niri",
-        "rev": "54bcc56a6e9a21fb9cc8665a5ce4e01295cbd0be",
+        "rev": "226b0de6c327cb54490ff4244d0ea5338e60aa5d",
         "type": "github"
       },
       "original": {
-        "owner": "098765434",
-        "ref": "ocbk",
+        "owner": "emaki-desktop",
+        "ref": "emaki",
         "repo": "niri",
         "type": "github"
       }
@@ -354,8 +354,8 @@
     "root": {
       "inputs": {
         "amane": "amane",
-        "amane-shell": "amane-shell",
         "disko": "disko",
+        "emaki": "emaki",
         "home-manager": "home-manager",
         "lanzaboote": "lanzaboote",
         "niri": "niri",
@@ -366,7 +366,7 @@
     "rust-overlay": {
       "inputs": {
         "nixpkgs": [
-          "amane-shell",
+          "emaki",
           "nixpkgs"
         ]
       },

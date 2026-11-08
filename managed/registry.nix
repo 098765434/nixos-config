@@ -1,4 +1,4 @@
-# The settings Shell Settings may own: one entry per setting, with its NixOS
+# The settings Emaki Settings may own: one entry per setting, with its NixOS
 # option path. `id` is its key in settings.json; `page` is the Settings page
 # that shows it (about, general, services, power, apps, storage, update);
 # `control` is how:
@@ -12,7 +12,7 @@
 # name its systemd `unit` (and `scope = "user"` for a user unit) so Settings
 # shows whether it's running, and `onDemand`, the id of its "only when
 # needed" switch. modules/managed.nix turns each into an option definition,
-# and the flake's `amaneSettings` output gives Settings the same list with
+# and the flake's `emakiSettings` output gives Settings the same list with
 # each option's value, type, which file sets it and on which line (so
 # "Move to Settings" can take a hand-written line over). The amane.* paths
 # are declared in modules/options.nix.
@@ -119,9 +119,9 @@ in
   # --- Services ---
   (service "tailscale" [ "services" "tailscale" "enable" ] "Tailscale" { unit = "tailscaled.service"; })
   (service "openssh" [ "services" "openssh" "enable" ] "SSH server" { unit = "sshd.service"; onDemand = "sshdOnDemand"; })
-  (service "sshdOnDemand" [ "amane" "services" "sshd" "onDemand" ] "Only when needed" { })
+  (service "sshdOnDemand" [ "emaki" "services" "sshd" "onDemand" ] "Only when needed" { })
   (service "avahi" [ "services" "avahi" "enable" ] "Avahi (network discovery)" { unit = "avahi-daemon.service"; onDemand = "avahiOnDemand"; })
-  (service "avahiOnDemand" [ "amane" "services" "avahi-daemon" "onDemand" ] "Only when needed" { })
+  (service "avahiOnDemand" [ "emaki" "services" "avahi-daemon" "onDemand" ] "Only when needed" { })
   (service "syncthing" [ "services" "syncthing" "enable" ] "Syncthing" { unit = "syncthing.service"; })
   (service "kdeconnect" [ "programs" "kdeconnect" "enable" ] "KDE Connect" { })
   (service "flatpak" [ "services" "flatpak" "enable" ] "Flatpak" { })
@@ -133,7 +133,7 @@ in
   # --- Power & Lock ---
   {
     id = "dimAfter";
-    path = [ "amane" "idle" "dimAfter" ];
+    path = [ "emaki" "idle" "dimAfter" ];
     page = "power";
     label = "Dim the screen after";
     control = "choice";
@@ -142,7 +142,7 @@ in
   }
   {
     id = "lockAfter";
-    path = [ "amane" "idle" "lockAfter" ];
+    path = [ "emaki" "idle" "lockAfter" ];
     page = "power";
     label = "Lock the screen after";
     control = "choice";
@@ -151,7 +151,7 @@ in
   }
   {
     id = "screenOffAfter";
-    path = [ "amane" "idle" "screenOffAfter" ];
+    path = [ "emaki" "idle" "screenOffAfter" ];
     page = "power";
     label = "Turn the screen off after";
     control = "choice";
@@ -162,7 +162,7 @@ in
   # --- Apps ---
   {
     id = "packages";
-    path = [ "amane" "packages" ];
+    path = [ "emaki" "packages" ];
     page = "apps";
     label = "Added in Settings";
     control = "packages";
@@ -172,7 +172,7 @@ in
   # --- Software Update ---
   {
     id = "updateCheck";
-    path = [ "amane" "updates" "check" ];
+    path = [ "emaki" "updates" "check" ];
     page = "update";
     label = "Check automatically";
     control = "choice";

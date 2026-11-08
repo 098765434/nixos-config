@@ -40,22 +40,22 @@
     };
 
     # niri fork with live gesture-progress IPC events (see the fork's
-    # niri-gesture-ipc-spec.md). A public GitHub fork of YaLTeR/niri; used as
+    # niri-gesture-ipc-spec.md). A public GitHub fork of niri-wm/niri; used as
     # programs.niri.package in modules/desktop.nix. Pinned to the fork branch —
     # bump with `nix flake update niri-fork`. For local hacking, override with
     # `--override-input niri-fork path:$HOME/Projects/desktop/niri`. Follows our
     # nixpkgs so it builds against the same package set as the rest of the system.
     niri-fork = {
-      url = "github:098765434/niri/ocbk";
+      url = "github:emaki-desktop/niri/emaki";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # amane-shell: the custom Wayland bar (depends on the amane fork via a git
+    # emaki: the custom Wayland bar (depends on the amane fork via a git
     # dependency). Installed + run as a systemd user service in ./home/home.nix.
-    # Bump with `nix flake update amane-shell`; local override:
-    # `--override-input amane-shell path:$HOME/Projects/desktop/shell`.
-    amane-shell = {
-      url = "github:098765434/amane-shell";
+    # Bump with `nix flake update emaki`; local override:
+    # `--override-input emaki path:$HOME/Projects/desktop/shell`.
+    emaki = {
+      url = "github:emaki-desktop/emaki";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -76,7 +76,7 @@
 
           # Record the commit each generation was built from (`-dirty` when
           # the tree had uncommitted changes): `nixos-version --json` shows it,
-          # and Shell Settings compares it with HEAD to say whether the
+          # and Emaki Settings compares it with HEAD to say whether the
           # running system is up to date.
           { system.configurationRevision = self.rev or self.dirtyRev or null; }
 
@@ -100,11 +100,11 @@
         ];
       };
 
-      # What Shell Settings reads: every setting in managed/registry.nix with
+      # What Emaki Settings reads: every setting in managed/registry.nix with
       # its effective value, the option's type, default and description, and
       # the repo files that set it (`modules/managed.nix` when it's ours).
-      #   nix eval --json .#amaneSettings
-      amaneSettings =
+      #   nix eval --json .#emakiSettings
+      emakiSettings =
         let
           lib = nixpkgs.lib;
           sys = self.nixosConfigurations.nixos-niri;
@@ -158,7 +158,7 @@
           revision = self.rev or self.dirtyRev or null;
           entries = map one registry;
           # added from Settings but gone from this nixpkgs: left out of the build
-          missingPackages = sys.config.amane.missingPackages;
+          missingPackages = sys.config.emaki.missingPackages;
           # what this repo's files install system-wide (not NixOS's own
           # defaults), each with the file that lists it, for the Apps page
           systemPackages =

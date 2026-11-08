@@ -1,4 +1,4 @@
-# Settings that Shell Settings owns: managed/settings.json, keyed by
+# Settings that Emaki Settings owns: managed/settings.json, keyed by
 # managed/registry.nix. A key that's missing leaves the option to the rest of
 # the config, so the hand-written modules win until a setting is moved here.
 # Also ships the helper Settings runs (through polkit) to activate a built
@@ -10,15 +10,15 @@ let
   settings = lib.importJSON ../managed/settings.json;
   set = r: lib.setAttrByPath r.path (lib.mkIf (settings ? ${r.id}) settings.${r.id});
 
-  # amane-nixos-activate <switch|boot|test> <nixos-system store path | profile link>
+  # emaki-nixos-activate <switch|boot|test> <nixos-system store path | profile link>
   # Only ever runs a built NixOS system's own switch-to-configuration; every
   # refusal exits 2. `test` activates without recording a generation, so a
   # reboot undoes it.
   helper = pkgs.writeShellApplication {
-    name = "amane-nixos-activate";
+    name = "emaki-nixos-activate";
     runtimeInputs = [ pkgs.nix pkgs.coreutils ];
     text = ''
-      [[ $# -eq 2 ]] || { echo "usage: amane-nixos-activate <switch|boot|test> <path>" >&2; exit 2; }
+      [[ $# -eq 2 ]] || { echo "usage: emaki-nixos-activate <switch|boot|test> <path>" >&2; exit 2; }
       mode=$1
       [[ $mode =~ ^(switch|boot|test)$ ]] || { echo "refused: mode $mode" >&2; exit 2; }
       out=$(readlink -f -- "$2") || { echo "refused: $2 does not resolve" >&2; exit 2; }
@@ -29,20 +29,20 @@ let
     '';
   };
 
-  policy = pkgs.writeTextDir "share/polkit-1/actions/org.amane.nixos-activate.policy" ''
+  policy = pkgs.writeTextDir "share/polkit-1/actions/org.emaki.nixos-activate.policy" ''
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
       "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
     <policyconfig>
-      <action id="org.amane.nixos-activate">
+      <action id="org.emaki.nixos-activate">
         <description>Apply system settings</description>
-        <message>Shell Settings wants to apply system settings</message>
+        <message>Emaki Settings wants to apply system settings</message>
         <defaults>
           <allow_any>auth_admin</allow_any>
           <allow_inactive>auth_admin</allow_inactive>
           <allow_active>auth_admin_keep</allow_active>
         </defaults>
-        <annotate key="org.freedesktop.policykit.exec.path">${helper}/bin/amane-nixos-activate</annotate>
+        <annotate key="org.freedesktop.policykit.exec.path">${helper}/bin/emaki-nixos-activate</annotate>
       </action>
     </policyconfig>
   '';

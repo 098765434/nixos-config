@@ -29,12 +29,12 @@ nix flake update nixpkgs               # bump just one
 Each of these only changes a file (`flake.lock` or `artcraft-sources.json`).
 Nothing takes effect until the next `nixos-rebuild switch`.
 
-Or from the desktop: Shell Settings → Software Update → **Check for Updates** builds the
+Or from the desktop: Emaki Settings → Software Update → **Check for Updates** builds the
 updated system first and shows what changes; **Apply Now** switches, writes `flake.lock` and
 commits it (`update: …`). **Update** on one input bumps just that one. A daily user timer
-(`amane-update-check`; **Check automatically** on that page) looks for moved inputs without
-building and sends a toast; `systemctl --user start amane-update-check` runs it now, and its
-findings are in `~/.local/state/amane-shell/nixos/check.json`.
+(`emaki-update-check`; **Check automatically** on that page) looks for moved inputs without
+building and sends a toast; `systemctl --user start emaki-update-check` runs it now, and its
+findings are in `~/.local/state/emaki/nixos/check.json`.
 
 Updating a single ArtCraft app without the script: edit
 `artcraft-sources.json`, change the `version`, replace the `hash` with
@@ -64,8 +64,8 @@ sudo nixos-rebuild switch --flake .#nixos-niri
 |---|---|---|
 | niri | `niri/config.kdl` | automatic on save |
 | waybar | `waybar/config`, `waybar/style.css` | `pkill -SIGUSR2 waybar` |
-| amane-shell (bar + notifications) | HM-managed via `home.nix` | needs rebuild |
-| amane-drop (Drop, Mod+Shift+D) | its own user unit in `home.nix` | needs rebuild |
+| emaki (bar + notifications) | HM-managed via `home.nix` | needs rebuild |
+| emaki-drop (Drop, Mod+Shift+D) | its own user unit in `home.nix` | needs rebuild |
 | hypridle, swaylock, foot, wofi | HM-managed | needs rebuild |
 
 The niri/waybar files are `mkOutOfStoreSymlink`'d at the repo, so editing
@@ -75,7 +75,7 @@ Validate niri KDL before relying on the auto-reload: `niri validate ~/.config/ni
 
 ## Installing apps
 
-**From nixpkgs** — Shell Settings → Apps → search and **Add** (goes into
+**From nixpkgs** — Emaki Settings → Apps → search and **Add** (goes into
 `managed/settings.json` as `packages`, applied with the next Apply), or add to
 `environment.systemPackages` in [modules/apps.nix](modules/apps.nix) and rebuild.
 
@@ -160,7 +160,7 @@ folder, not the toolbar — open `Ctrl+Shift+O` to find them.
 
 ```sh
 niri validate -c ~/.config/niri/config.kdl
-systemctl --user status hyprpolkitagent amane-shell amane-drop hypridle
+systemctl --user status hyprpolkitagent emaki emaki-drop hypridle
 ```
 
 ## GPU memory of the desktop
@@ -171,10 +171,10 @@ is in their `fdinfo`, which needs root under `ptrace_scope 1`:
 ```sh
 gpu() { sudo awk '/drm-client-id/{id=$2} /drm-total-(vram|gtt):/{m[id SUBSEP $1]=$2*($3=="MiB"?1024:1)}
   END{for(k in m){split(k,a,SUBSEP); t[a[2]]+=m[k]} for(x in t) printf "  %s %.0f MiB\n", x, t[x]/1024}' /proc/$1/fdinfo/*; }
-echo niri; gpu $(pidof niri); echo shell; gpu $(pgrep -f '\.amane-shell-wrapped')
+echo niri; gpu $(pidof niri); echo shell; gpu $(pgrep -f '\.emaki-wrapped')
 cat /sys/class/drm/card*/device/mem_info_vram_used   # the whole GPU, bytes
 sudo ss -xp | grep X11-unix                         # who keeps Xwayland alive
 ```
 
 Record it at idle, after the launcher and Quick Settings' edit mode, after a screenshot and a
-window swipe. The budget and what has been cut: amane-shell's `docs/development/memory.md`.
+window swipe. The budget and what has been cut: emaki's `docs/developer/memory.md`.

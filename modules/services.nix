@@ -3,9 +3,9 @@
 
 {
   # Tailscale VPN (run `sudo tailscale up` once after install to authenticate).
-  # Switched on as `tailscale` in managed/settings.json (Shell Settings).
+  # Switched on as `tailscale` in managed/settings.json (Emaki Settings).
 
-  # SSH server: `openssh` in managed/settings.json (Shell Settings → Services),
+  # SSH server: `openssh` in managed/settings.json (Emaki Settings → Services),
   # with `sshdOnDemand` keeping it installed but not started at boot, to keep
   # idle RAM down: `sudo systemctl start sshd` (or Start there) when needed.
 
@@ -15,7 +15,7 @@
   # the web UI is wiped on the next rebuild — manage sync topology HERE, not the
   # GUI. On a fresh install this pulls the whole vault down from pi5, so it also
   # doubles as the vault's restore path.
-  # Switched on as `syncthing` in managed/settings.json (Shell Settings).
+  # Switched on as `syncthing` in managed/settings.json (Emaki Settings).
   services.syncthing = {
     user = "ocbk";
     group = "users";
@@ -95,7 +95,7 @@
   };
 
   # mDNS / network discovery (KDE Connect, printers, .local names). Switched
-  # on as `avahi` in managed/settings.json (Shell Settings); `avahiOnDemand`
+  # on as `avahi` in managed/settings.json (Emaki Settings); `avahiOnDemand`
   # keeps it from starting at boot (its socket still starts it on the first
   # .local lookup or printer/network browse).
   services.avahi = {

@@ -1,4 +1,4 @@
-# Options of our own that Shell Settings can point at (managed/registry.nix
+# Options of our own that Emaki Settings can point at (managed/registry.nix
 # addresses settings by option path, so what isn't an option gets one here):
 # the idle timeouts behind hypridle's listener list, "installed but not
 # started at boot" for a service, packages added from Settings, and how
@@ -7,7 +7,7 @@
 { config, lib, pkgs, inputs, ... }:
 
 let
-  cfg = config.amane;
+  cfg = config.emaki;
   t = lib.types;
   # a package added from Settings, or null when nixpkgs no longer has it:
   # a removed package is usually an alias that throws ("… has been renamed")
@@ -26,18 +26,18 @@ let
     description = "Install ${what} but don't start it at boot: start it by hand when needed.";
   };
 
-  # amane-update-check: relocks the flake into the shell's state dir (the
+  # emaki-update-check: relocks the flake into the shell's state dir (the
   # repo's flake.lock is untouched), writes check.json with what changed,
   # and notifies once per new set of changes; clicking the toast opens
-  # Shell Settings → Software Update. A check that can't reach the network
+  # Emaki Settings → Software Update. A check that can't reach the network
   # only records why.
-  amaneShell = inputs.amane-shell.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  emakiShell = inputs.emaki.packages.${pkgs.stdenv.hostPlatform.system}.default;
   updateCheck = pkgs.writeShellApplication {
-    name = "amane-update-check";
-    runtimeInputs = [ pkgs.nix pkgs.jq pkgs.libnotify pkgs.coreutils pkgs.git amaneShell ];
+    name = "emaki-update-check";
+    runtimeInputs = [ pkgs.nix pkgs.jq pkgs.libnotify pkgs.coreutils pkgs.git emakiShell ];
     text = ''
       repo="$HOME/nixos-config"
-      dir="''${XDG_STATE_HOME:-$HOME/.local/state}/amane-shell/nixos"
+      dir="''${XDG_STATE_HOME:-$HOME/.local/state}/emaki/nixos"
       mkdir -p "$dir"
       now=$(date +%s)
 
@@ -68,7 +68,7 @@ let
       cp "$dir/check.json" "$dir/notified.json"
       if notify-send -a "Software Update" -i system-software-update --action=default=Open \
            "Updates available" "$names" | grep -q '^default$'; then
-        amane-settings --page update
+        emaki-settings --page update
       fi
     '';
   };
@@ -78,7 +78,7 @@ let
   };
 in
 {
-  options.amane = {
+  options.emaki = {
     idle.dimAfter = seconds 180 "Dim the screen after";
     idle.lockAfter = seconds 240 "Lock the screen after";
     idle.screenOffAfter = seconds 300 "Turn the screen off after";
@@ -87,7 +87,7 @@ in
     packages = lib.mkOption {
       type = t.listOf t.str;
       default = [ ];
-      description = "nixpkgs attribute paths (dotted) added from Shell Settings → Apps.";
+      description = "nixpkgs attribute paths (dotted) added from Emaki Settings → Apps.";
     };
     missingPackages = lib.mkOption {
       type = t.listOf t.str;
@@ -112,25 +112,25 @@ in
       lib.mkIf (cfg.services."avahi-daemon".onDemand && config.services.avahi.enable) (lib.mkForce [ ]);
 
     # one nixpkgs dropped is left out with a warning rather than failing the
-    # build; Shell Settings → Apps shows it as gone (amaneSettings.missingPackages)
+    # build; Emaki Settings → Apps shows it as gone (emakiSettings.missingPackages)
     environment.systemPackages =
       builtins.filter (p: p != null) (map resolve cfg.packages);
     warnings = map
-      (name: "amane.packages: ${name} isn't in this nixpkgs any more (renamed or removed); remove it in Shell Settings → Apps.")
+      (name: "emaki.packages: ${name} isn't in this nixpkgs any more (renamed or removed); remove it in Emaki Settings → Apps.")
       missing;
 
     # the update check, as a user timer (it needs the session bus for the
     # toast and the user's nix settings); `systemctl --user start
-    # amane-update-check` runs one now
+    # emaki-update-check` runs one now
     home-manager.users.ocbk.systemd.user = lib.mkIf (cfg.updates.check != "never") {
-      services.amane-update-check = {
+      services.emaki-update-check = {
         Unit.Description = "Check the NixOS configuration's inputs for updates";
         Service = {
           Type = "oneshot";
           ExecStart = lib.getExe updateCheck;
         };
       };
-      timers.amane-update-check = {
+      timers.emaki-update-check = {
         Unit.Description = "Check for NixOS updates ${cfg.updates.check}";
         Timer = {
           OnCalendar = checkEvery.${cfg.updates.check};
@@ -148,8 +148,8 @@ in
         # through the shell, so it dims in HDR too (the panel ignores its
         # backlight there); brightnessctl when the shell isn't answering.
         # no $XDG_RUNTIME_DIR: hyprlang reads $NAME as its own variable
-        on-timeout = ''[ "$(printf 'osd\nbrightness\ndim\n10\n' | nc -U -N /run/user/$(id -u)/amane.sock)" = ok ] || brightnessctl -s set 10%'';
-        on-resume = ''[ "$(printf 'osd\nbrightness\nrestore\n' | nc -U -N /run/user/$(id -u)/amane.sock)" = ok ] || brightnessctl -r'';
+        on-timeout = ''[ "$(printf 'osd\nbrightness\ndim\n10\n' | nc -U -N /run/user/$(id -u)/emaki.sock)" = ok ] || brightnessctl -s set 10%'';
+        on-resume = ''[ "$(printf 'osd\nbrightness\nrestore\n' | nc -U -N /run/user/$(id -u)/emaki.sock)" = ok ] || brightnessctl -r'';
       }
       ++ lib.optional (cfg.idle.lockAfter > 0) {
         timeout = cfg.idle.lockAfter;

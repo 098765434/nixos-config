@@ -32,9 +32,9 @@
       "${config.home.homeDirectory}/nixos-config/waybar/style.css";
 
   # KDE Connect's daemon starts at login from its own system autostart entry
-  # (present while `kdeconnect` is on in Shell Settings → Services, which also
-  # opens its ports). amane-shell draws all of its UI: the Quick Settings Phone
-  # page and amane-messages.
+  # (present while `kdeconnect` is on in Emaki Settings → Services, which also
+  # opens its ports). emaki draws all of its UI: the Quick Settings Phone
+  # page and emaki-messages.
   #
   # nm-applet has a system autostart entry besides the (now disabled) niri
   # spawn; this Hidden= entry masks it, since the shell's network tiles
@@ -118,7 +118,7 @@
     '';
   };
 
-  # --- Notifications: amane-shell ---
+  # --- Notifications: emaki ---
   # The bar below is the notification daemon (toasts, center, Do Not Disturb),
   # so mako is gone: only one program can own org.freedesktop.Notifications.
 
@@ -135,8 +135,8 @@
         before_sleep_cmd = "loginctl lock-session";
         after_sleep_cmd = "niri msg action power-on-monitors";
       };
-      # The listeners (dim, lock, screen off) come from amane.idle.* in
-      # managed/settings.json (Shell Settings → Power & Lock); see
+      # The listeners (dim, lock, screen off) come from emaki.idle.* in
+      # managed/settings.json (Emaki Settings → Power & Lock); see
       # modules/options.nix. Don't add any here: the list would be merged.
     };
   };
@@ -153,23 +153,23 @@
     };
   };
 
-  # --- Bar: amane-shell (custom niri status bar) ---
+  # --- Bar: emaki (custom niri status bar) ---
   # Installed from the flake input and run as a user service bound to the niri
   # graphical session, so it starts on login and restarts on crash (logs via
-  # `journalctl --user -u amane-shell`) — mirrors the hypridle pattern and
+  # `journalctl --user -u emaki`) — mirrors the hypridle pattern and
   # replaces a niri `spawn-at-startup`. Default theme is dark; to switch, add
   # Environment = [ "AMANE_THEME=light" ] to Service below.
   # The bar's blur/rounding also needs its niri layer-rules: run
   # `~/Projects/desktop/shell/gen-layer-rules.sh ~/nixos-config/niri/config.kdl`.
-  home.packages = [ inputs.amane-shell.packages.${pkgs.system}.default ];
-  systemd.user.services.amane-shell = {
+  home.packages = [ inputs.emaki.packages.${pkgs.system}.default ];
+  systemd.user.services.emaki = {
     Unit = {
-      Description = "amane-shell bar";
+      Description = "emaki bar";
       PartOf = [ "graphical-session.target" ];
       After = [ "graphical-session.target" ];
     };
     Service = {
-      ExecStart = "${inputs.amane-shell.packages.${pkgs.system}.default}/bin/amane-shell";
+      ExecStart = "${inputs.emaki.packages.${pkgs.system}.default}/bin/emaki";
       Restart = "on-failure";
       # it passes passwords from rbw into fields: no core dump of it, or of the rbw agent
       # it starts (which inherits this), may land on disk
@@ -178,39 +178,39 @@
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
-  # --- Drop: amane-drop (a drop shelf in the status bar) ---
-  # Its own unit, so it isn't in amane-shell's cgroup and a restart of the
+  # --- Drop: emaki-drop (a drop shelf in the status bar) ---
+  # Its own unit, so it isn't in emaki's cgroup and a restart of the
   # shell doesn't take it down; it puts its item back in the bar once the
-  # shell's org.amane.StatusBar1 is there again. "Quit Drop" in its menu exits
+  # shell's org.emaki.StatusBar1 is there again. "Quit Drop" in its menu exits
   # cleanly, which leaves it stopped until the next login or Mod+Shift+D.
   # curl, secret-tool and wl-copy come with the package's wrapper.
-  systemd.user.services.amane-drop = {
+  systemd.user.services.emaki-drop = {
     Unit = {
-      Description = "amane-drop (Drop: a grid of folders, apps and uploads)";
+      Description = "emaki-drop (Drop: a grid of folders, apps and uploads)";
       PartOf = [ "graphical-session.target" ];
       After = [ "graphical-session.target" ];
     };
     Service = {
-      ExecStart = "${inputs.amane-shell.packages.${pkgs.system}.default}/bin/amane-drop";
+      ExecStart = "${inputs.emaki.packages.${pkgs.system}.default}/bin/emaki-drop";
       Restart = "on-failure";
     };
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
-  # --- Assistant: amane-assistant (the launcher's commands, typed or spoken) ---
+  # --- Assistant: emaki-assistant (the launcher's commands, typed or spoken) ---
   # Cactus (Needle 3 + Whistle) on the CPU, models from the store; the shell
-  # talks to it over $XDG_RUNTIME_DIR/amane-assistant.sock and works without
+  # talks to it over $XDG_RUNTIME_DIR/emaki-assistant.sock and works without
   # it. Kept to Unix sockets: it reads everything here and never needs the
   # network (Cactus has no network code; this makes sure). The microphone is
   # PulseAudio's socket, only while Mod+Shift+Space listens.
-  systemd.user.services.amane-assistant = {
+  systemd.user.services.emaki-assistant = {
     Unit = {
-      Description = "amane-shell assistant (Cactus)";
+      Description = "emaki assistant (Cactus)";
       PartOf = [ "graphical-session.target" ];
       After = [ "graphical-session.target" ];
     };
     Service = {
-      ExecStart = "${inputs.amane-shell.packages.${pkgs.system}.default}/bin/amane-assistant";
+      ExecStart = "${inputs.emaki.packages.${pkgs.system}.default}/bin/emaki-assistant";
       Restart = "on-failure";
       RestrictAddressFamilies = [ "AF_UNIX" ];
       NoNewPrivileges = true;
@@ -225,10 +225,10 @@
     # again after 5 minutes with nothing asked (AMANE_ASSISTANT_IDLE), which
     # gives its models' 80-140 MB back.
   };
-  systemd.user.sockets.amane-assistant = {
-    Unit.Description = "amane-shell assistant's socket";
+  systemd.user.sockets.emaki-assistant = {
+    Unit.Description = "emaki assistant's socket";
     Socket = {
-      ListenStream = "%t/amane-assistant.sock";
+      ListenStream = "%t/emaki-assistant.sock";
       SocketMode = "0600";
     };
     Install.WantedBy = [ "sockets.target" ];

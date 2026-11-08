@@ -22,7 +22,7 @@
     ./modules/services.nix
     ./modules/security.nix
     ./modules/apps.nix
-    ./modules/managed.nix   # settings Shell Settings owns (managed/settings.json)
+    ./modules/managed.nix   # settings Emaki Settings owns (managed/settings.json)
     ./modules/options.nix   # our own options those settings can point at (amane.*)
 
     # ArtCraft creative apps (vectorcraft, figcraft, photocraft, designcraft).
@@ -36,14 +36,14 @@
     enable = true;
     # The cap on stored boot entries (your /boot is only ~1 GB, so unbounded
     # generations would eventually fill it and break rebuilds) is
-    # `bootEntries` in managed/settings.json, set from Shell Settings.
+    # `bootEntries` in managed/settings.json, set from Emaki Settings.
   };
   boot.loader.efi.canTouchEfiVariables = true;
 
   # ---------------------------------------------------------------------------
   # Networking
   # ---------------------------------------------------------------------------
-  # networking.hostName is `hostName` in managed/settings.json (Shell Settings → General).
+  # networking.hostName is `hostName` in managed/settings.json (Emaki Settings → General).
   networking.networkmanager = {
     enable = true;
     # Privacy: randomize the Wi-Fi MAC so networks can't track your hardware
@@ -75,7 +75,7 @@
   # ---------------------------------------------------------------------------
   # Locale / time / keyboard (Norwegian — adjust to taste)
   # ---------------------------------------------------------------------------
-  # time.timeZone is `timeZone` in managed/settings.json (Shell Settings).
+  # time.timeZone is `timeZone` in managed/settings.json (Emaki Settings).
   # i18n.defaultLocale is `locale` there (General → Language).
   # niri's xkb section is empty, so it reads the layout from locale1, which
   # services.xserver.xkb sets: `keyboardLayout` and `keyboardVariant` in

@@ -38,9 +38,9 @@
   programs.dconf.enable = true;
 
   # KDE Connect (opens its own firewall ports): `kdeconnect` in
-  # managed/settings.json (Shell Settings → Services).
+  # managed/settings.json (Emaki Settings → Services).
 
-  # The phone's screen and camera beside it (amane-mirror, scrcpy's server
+  # The phone's screen and camera beside it (emaki-mirror, scrcpy's server
   # over adb): Wireless debugging announces itself over mDNS, which the
   # shell listens for, and the phone's camera is a loopback webcam named
   # "Phone Camera" (video call apps list it; exclusive_caps lets browsers).
@@ -54,7 +54,7 @@
   # Flatpak — chiefly your browser (Zen). After first boot:
   #   flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
   #   flatpak install flathub app.zen_browser.zen
-  # Switched on as `flatpak` in managed/settings.json (Shell Settings).
+  # Switched on as `flatpak` in managed/settings.json (Emaki Settings).
 
   # AppImage support (FHS sandbox) — runs the ArtCraft AppImages.
   programs.appimage = {
@@ -62,11 +62,11 @@
     binfmt = true;
   };
 
-  # Polkit: the shell is the session's authentication agent (amane-shell
+  # Polkit: the shell is the session's authentication agent (emaki
   # registers org.freedesktop.PolicyKit1.AuthenticationAgent and asks for
   # the password in its own alert), so the niri flake's polkit-kde agent
   # stays off. Check: busctl --system call … CheckAuthorization, or
-  # `systemctl --user start sshd`-style prompts from Shell Settings.
+  # `systemctl --user start sshd`-style prompts from Emaki Settings.
   security.polkit.enable = true;
   systemd.user.services.niri-flake-polkit.enable = false;
 
