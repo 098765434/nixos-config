@@ -52,6 +52,9 @@
     wifi.macAddress = "random";
     # Hand DNS to systemd-resolved (encrypted DNS configured in services.nix).
     dns = "systemd-resolved";
+    # OpenVPN profiles, and importing .ovpn files (Emaki Settings → Network).
+    # WireGuard is built into NetworkManager and needs no plugin.
+    plugins = [ pkgs.networkmanager-openvpn ];
 
     # Declarative Wi-Fi profile. The SSID lives here; the PSK does NOT — it is
     # read at activation from a local env file that is never in the Nix store or
