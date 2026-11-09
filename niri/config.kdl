@@ -157,7 +157,26 @@ window-rule {
     // Zen (Firefox-based) picture-in-picture player floats by default.
     match app-id=r#"^app\.zen_browser\.zen$"# title="^Picture-in-Picture$"
     open-floating true
-    
+
+}
+
+// Zen draws a transparent window (zen.widget.linux.transparency in its
+// user.js); niri frosts what's behind it in the shell's glass, and its
+// popups (menus, the urlbar dropdown) like the shell's.
+window-rule {
+    match app-id=r#"^app\.zen_browser\.zen$"#
+    background-effect {
+        blur true
+        material "glass"
+    }
+
+    popups {
+        geometry-corner-radius 10
+        background-effect {
+            blur true
+            material "glass"
+        }
+    }
 }
 
 window-rule {
