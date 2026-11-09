@@ -12,7 +12,7 @@ input {
     touchpad {
         tap
         natural-scroll
-        accel-speed 0.42
+        accel-speed 0.4
     }
     mouse {
         natural-scroll
