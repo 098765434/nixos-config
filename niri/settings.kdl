@@ -2,7 +2,7 @@
 // know are kept. niri's config.kdl includes it last, so what's
 // here wins over config.kdl's own setting.
 
-prefer-no-csd false
+prefer-no-csd true
 layout {
     gaps 8
     mat {
