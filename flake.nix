@@ -80,6 +80,10 @@
           # running system is up to date.
           { system.configurationRevision = self.rev or self.dirtyRev or null; }
 
+          # emaki's system part: the polkit-guarded helper Emaki Settings
+          # applies a built configuration with (enabled in modules/managed.nix).
+          inputs.emaki.nixosModules.default
+
           # Declarative disk layout (LUKS + btrfs).
           disko.nixosModules.disko
 

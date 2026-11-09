@@ -63,11 +63,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1794196216,
-        "narHash": "sha256-M5JJ60uCuSJOarkAhNEH5AyuYbIeNvOn5/728rV9BU4=",
+        "lastModified": 1794265938,
+        "narHash": "sha256-NPcWrv/qVKD4xiAuyd3/VqThw6JG4xbgcBgr33UBGEQ=",
         "owner": "emaki-desktop",
         "repo": "emaki",
-        "rev": "f7f2db630a10f688c8d8dd800561fa303a7a6aba",
+        "rev": "b813ca8da7055baa14911369229eb13dd8faf8d2",
         "type": "github"
       },
       "original": {

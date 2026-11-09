@@ -6,6 +6,9 @@
 { config, pkgs, inputs, lib, ... }:
 
 {
+  # emaki's user services (programs.emaki below)
+  imports = [ inputs.emaki.homeManagerModules.default ];
+
   # NOTE: do NOT import inputs.niri.homeModules.niri here. niri-flake's NixOS
   # module (niri.nixosModules.niri in flake.nix) already injects the niri
   # home-manager module into every home-manager user, so importing it again
@@ -153,85 +156,21 @@
     };
   };
 
-  # --- Bar: emaki (custom niri status bar) ---
-  # Installed from the flake input and run as a user service bound to the niri
-  # graphical session, so it starts on login and restarts on crash (logs via
-  # `journalctl --user -u emaki`) — mirrors the hypridle pattern and
-  # replaces a niri `spawn-at-startup`. Default theme is dark; to switch, add
-  # Environment = [ "AMANE_THEME=light" ] to Service below.
+  # --- emaki: the shell, Drop and the assistant ---
+  # From the emaki flake's home-manager module (nix/home-module.nix there): the
+  # shell as a user service bound to the niri graphical session (restarts on
+  # crash; `journalctl --user -u emaki`), Drop as a unit of its own (outside
+  # the shell's cgroup, so a restart of the shell doesn't take it down), and
+  # the assistant's daemon started by its socket and sandboxed (unix sockets
+  # only, no new privileges, a system-call filter, 1 GB at most). Default theme
+  # is dark; to switch, add
+  # systemd.user.services.emaki.Service.Environment = [ "AMANE_THEME=light" ];
   # The bar's blur/rounding also needs its niri layer-rules: run
-  # `~/Projects/desktop/shell/gen-layer-rules.sh ~/nixos-config/niri/config.kdl`.
-  home.packages = [ inputs.emaki.packages.${pkgs.system}.default ];
-  systemd.user.services.emaki = {
-    Unit = {
-      Description = "emaki bar";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
-    };
-    Service = {
-      ExecStart = "${inputs.emaki.packages.${pkgs.system}.default}/bin/emaki";
-      Restart = "on-failure";
-      # it passes passwords from rbw into fields: no core dump of it, or of the rbw agent
-      # it starts (which inherits this), may land on disk
-      LimitCORE = 0;
-    };
-    Install.WantedBy = [ "graphical-session.target" ];
-  };
-
-  # --- Drop: emaki-drop (a drop shelf in the status bar) ---
-  # Its own unit, so it isn't in emaki's cgroup and a restart of the
-  # shell doesn't take it down; it puts its item back in the bar once the
-  # shell's org.emaki.StatusBar1 is there again. "Quit Drop" in its menu exits
-  # cleanly, which leaves it stopped until the next login or Mod+Shift+D.
-  # curl, secret-tool and wl-copy come with the package's wrapper.
-  systemd.user.services.emaki-drop = {
-    Unit = {
-      Description = "emaki-drop (Drop: a grid of folders, apps and uploads)";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
-    };
-    Service = {
-      ExecStart = "${inputs.emaki.packages.${pkgs.system}.default}/bin/emaki-drop";
-      Restart = "on-failure";
-    };
-    Install.WantedBy = [ "graphical-session.target" ];
-  };
-
-  # --- Assistant: emaki-assistant (the launcher's commands, typed or spoken) ---
-  # Cactus (Needle 3 + Whistle) on the CPU, models from the store; the shell
-  # talks to it over $XDG_RUNTIME_DIR/emaki-assistant.sock and works without
-  # it. Kept to Unix sockets: it reads everything here and never needs the
-  # network (Cactus has no network code; this makes sure). The microphone is
-  # PulseAudio's socket, only while Mod+Shift+Space listens.
-  systemd.user.services.emaki-assistant = {
-    Unit = {
-      Description = "emaki assistant (Cactus)";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
-    };
-    Service = {
-      ExecStart = "${inputs.emaki.packages.${pkgs.system}.default}/bin/emaki-assistant";
-      Restart = "on-failure";
-      RestrictAddressFamilies = [ "AF_UNIX" ];
-      NoNewPrivileges = true;
-      LockPersonality = true;
-      MemoryMax = "1G";
-      Environment = [
-        "CACTUS_TELEMETRY=0"
-        "DO_NOT_TRACK=1"
-      ];
-    };
-    # Started by its socket (below) at the shell's first request, and gone
-    # again after 5 minutes with nothing asked (AMANE_ASSISTANT_IDLE), which
-    # gives its models' 80-140 MB back.
-  };
-  systemd.user.sockets.emaki-assistant = {
-    Unit.Description = "emaki assistant's socket";
-    Socket = {
-      ListenStream = "%t/emaki-assistant.sock";
-      SocketMode = "0600";
-    };
-    Install.WantedBy = [ "sockets.target" ];
+  # `~/Projects/emaki-desktop/shell/gen-layer-rules.sh ~/nixos-config/niri/config.kdl`.
+  programs.emaki = {
+    enable = true;
+    drop.enable = true;
+    assistant.enable = true;
   };
 
   # --- Wallpaper: swaybg on niri's background layer ---
