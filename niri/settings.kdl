@@ -3,5 +3,5 @@
 // here wins over config.kdl's own setting.
 
 layout {
-    gaps 10
+    gaps 8
 }
