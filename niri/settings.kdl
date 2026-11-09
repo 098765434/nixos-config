@@ -1,0 +1,4 @@
+// Written by Emaki Settings, which reads it back; lines it doesn't
+// know are kept. niri's config.kdl includes it last, so what's
+// here wins over config.kdl's own setting.
+

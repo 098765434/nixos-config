@@ -838,3 +838,6 @@ binds {
 
 // The materials (glass, glass-clear, frost and their -still twins) are generated
 // from emaki's tokens, in the emaki layer-rules region above.
+
+// Emaki Settings writes this file; it comes last, so its settings win:
+include optional=true "/home/ocbk/nixos-config/niri/settings.kdl"
