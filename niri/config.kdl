@@ -29,21 +29,23 @@ blur {
     saturation 1.3
 }
 
-input {
-    keyboard {
-        xkb {
-            // Empty: niri fetches xkb from org.freedesktop.locale1,
-            // which NixOS drives via services.xserver.xkb (layout "no").
-        }
-        numlock
-    }
-    touchpad {
-        tap
-        natural-scroll
-    }
-    mouse {}
-    trackpoint {}
-}
+// Input is set in Emaki Settings, which writes this file:
+include optional=true "/home/ocbk/nixos-config/niri/input.kdl"
+// input {
+//     keyboard {
+//         xkb {
+//             // Empty: niri fetches xkb from org.freedesktop.locale1,
+//             // which NixOS drives via services.xserver.xkb (layout "no").
+//         }
+//         numlock
+//     }
+//     touchpad {
+//         tap
+//         natural-scroll
+//     }
+//     mouse {}
+//     trackpoint {}
+// }
 
 // NIXOS-NOTE: this output block targets your real OLED laptop panel. In a VM
 // the virtual display has a different name, so niri ignores this block thericone.

@@ -1,0 +1,19 @@
+// Written by Emaki Settings (Input), which reads it back; lines it
+// doesn't know are kept. niri's config.kdl includes it.
+
+input {
+    keyboard {
+        numlock
+        xkb {
+            // Empty: niri fetches xkb from org.freedesktop.locale1,
+            // which NixOS drives via services.xserver.xkb (layout "no").
+        }
+    }
+    touchpad {
+        tap
+        natural-scroll
+    }
+    mouse {
+    }
+    trackpoint {}
+}
