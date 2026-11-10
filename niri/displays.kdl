@@ -1,4 +1,4 @@
-// Written by Shell Settings (Displays), which reads it back; lines it
+// Written by Emaki Settings (Displays), which reads it back; lines it
 // doesn't know are kept. niri's config.kdl includes it.
 
 output "eDP-1" {
@@ -6,6 +6,6 @@ output "eDP-1" {
     scale 1.75
     transform "normal"
     variable-refresh-rate on-demand=true
-    hdr
-    sdr-brightness 80
+    hdr-auto
+    sdr-brightness 327
 }
