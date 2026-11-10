@@ -53,6 +53,8 @@
     # (or let direnv auto-load it) per project instead of polluting the system.
     gcc
     python3
+    nixd             # Nix language server (used by Zed's Nix extension)
+    nixfmt           # official Nix formatter (Zed format-on-save for .nix)
 
     # --- GUI apps ---
     # Browser: Zen (not in nixpkgs) is installed via Flatpak — see desktop.nix.
@@ -61,7 +63,16 @@
     gnome-calculator
     loupe                 # image viewer
     evince                # PDF viewer
-    vscode
+    # nixpkgs' recipe (26.05, Nov 2026) still swaps VS Code's ripgrep for its
+    # own at the old path; 1.144 moved it to ripgrep-universal, so the build
+    # failed. Pointed at the new one; a no-op once nixpkgs is fixed.
+    (vscode.overrideAttrs (old: {
+      postPatch =
+        builtins.replaceStrings
+          [ "resources/app/node_modules/@vscode/ripgrep/bin/rg" ]
+          [ "resources/app/node_modules.asar.unpacked/@vscode/ripgrep-universal/bin/linux-x64/rg" ]
+          (old.postPatch or "");
+    }))
     zed-editor
     obsidian
     mission-center        # system/resource monitor
