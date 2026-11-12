@@ -162,15 +162,12 @@ window-rule {
 
 }
 
-// Zen draws a transparent window (zen.widget.linux.transparency in its
-// user.js); niri frosts what's behind it in the shell's glass, and its
-// popups (menus, the urlbar dropdown) like the shell's.
+// Zen's window is opaque (zen.widget.linux.transparency false in its
+// user.js): a frosted window can't be scanned out and is composited over
+// the blurred backdrop every frame. Its popups (menus, the urlbar
+// dropdown) keep the shell's glass; they only cost while open.
 window-rule {
     match app-id=r#"^app\.zen_browser\.zen$"#
-    background-effect {
-        blur true
-        material "glass"
-    }
 
     popups {
         geometry-corner-radius 10
