@@ -78,6 +78,9 @@ let
   };
 in
 {
+  # energy options and what they turn on (Settings → Power & Lock)
+  imports = [ ./power.nix ];
+
   options.emaki = {
     idle.dimAfter = seconds 180 "Dim the screen after";
     idle.lockAfter = seconds 240 "Lock the screen after";

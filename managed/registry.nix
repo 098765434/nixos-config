@@ -1,6 +1,7 @@
 # The settings Emaki Settings may own: one entry per setting, with its NixOS
 # option path. `id` is its key in settings.json; `page` is the Settings page
-# that shows it (about, general, services, power, apps, storage, update);
+# that shows it (about, general, services, power, energy (on Power & Lock),
+# apps, storage, update);
 # `control` is how:
 #   switch                a boolean
 #   int (min, max)        a slider over the range
@@ -156,6 +157,79 @@ in
     label = "Turn the screen off after";
     control = "choice";
     choices = minutes;
+    tier = "rebuild";
+  }
+  {
+    id = "suspendOnBatteryAfter";
+    path = [ "emaki" "idle" "suspendOnBatteryAfter" ];
+    page = "power";
+    label = "Sleep on battery after";
+    control = "choice";
+    choices = minutes;
+    tier = "rebuild";
+  }
+
+  # --- Power & Lock → Energy Saving ---
+  {
+    id = "devicePowerSaving";
+    path = [ "emaki" "power" "devices" ];
+    page = "energy";
+    label = "Power saving for devices";
+    control = "switch";
+    tier = "restart";
+  }
+  {
+    id = "wifiPowerSave";
+    path = [ "emaki" "wifi" "powerSave" ];
+    page = "energy";
+    label = "Wi-Fi power saving";
+    control = "switch";
+    tier = "rebuild";
+  }
+  {
+    id = "bluetoothOnAtStart";
+    path = [ "emaki" "bluetooth" "onAtStart" ];
+    page = "energy";
+    label = "Bluetooth on at startup";
+    control = "switch";
+    tier = "rebuild";
+  }
+  {
+    id = "syncthingDirect";
+    path = [ "emaki" "syncthing" "direct" ];
+    page = "energy";
+    label = "Syncthing only over Tailscale";
+    control = "switch";
+    tier = "rebuild";
+  }
+  {
+    id = "bitwardenAtLogin";
+    path = [ "emaki" "autostart" "bitwarden" ];
+    page = "energy";
+    label = "Open Bitwarden at login";
+    control = "switch";
+    tier = "rebuild";
+  }
+  {
+    id = "optimiseStoreWeekly";
+    path = [ "emaki" "nix" "optimiseWeekly" ];
+    page = "energy";
+    label = "Deduplicate the Nix store weekly, not on every build";
+    control = "switch";
+    tier = "rebuild";
+  }
+  {
+    id = "journalSize";
+    path = [ "emaki" "journal" "maxUse" ];
+    page = "energy";
+    label = "System log keeps at most";
+    control = "choice";
+    choices = [
+      { label = "100 MB"; value = "100M"; }
+      { label = "200 MB"; value = "200M"; }
+      { label = "500 MB"; value = "500M"; }
+      { label = "1 GB"; value = "1G"; }
+    ];
     tier = "rebuild";
   }
 

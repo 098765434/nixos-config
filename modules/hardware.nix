@@ -19,9 +19,9 @@
   # Bluetooth (controls are the shell's quick-settings tile and page; the
   # shell is BlueZ's pairing agent, so devices that need a PIN pair there too).
   # Switched on as `bluetooth` in managed/settings.json (Emaki Settings).
-  hardware.bluetooth = {
-    powerOnBoot = true;
-  };
+  # Powered at boot or not: `bluetoothOnAtStart` (emaki.bluetooth.onAtStart,
+  # modules/power.nix), off by default so the radio doesn't idle powered
+  # with nothing connected.
 
   # Fingerprint reader: `fprintd` in managed/settings.json (Emaki Settings).
   # After install, enroll with: fprintd-enroll
