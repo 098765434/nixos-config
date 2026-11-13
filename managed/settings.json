@@ -14,7 +14,10 @@
   "locale": "en_US.UTF-8",
   "lockAfter": 240,
   "openssh": true,
-  "packages": [],
+  "packages": [
+    "flatpak",
+    "bazaar"
+  ],
   "screenOffAfter": 300,
   "sshdOnDemand": true,
   "syncthing": true,
