@@ -44,6 +44,11 @@
   # Networking
   # ---------------------------------------------------------------------------
   # networking.hostName is `hostName` in managed/settings.json (Emaki Settings → General).
+  # No WWAN card in this laptop (`mmcli -L` finds no modems), so ModemManager —
+  # which NetworkManager otherwise pulls in — would only idle and probe devices.
+  # Re-enable if a cellular modem or USB LTE dongle is ever added.
+  networking.modemmanager.enable = false;
+
   networking.networkmanager = {
     enable = true;
     # Privacy: randomize the Wi-Fi MAC so networks can't track your hardware
