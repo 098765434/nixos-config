@@ -63,11 +63,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1794333700,
-        "narHash": "sha256-AK527luJPPndt5L1rkWq+GDtizrLdIHvpBUWZjMDcKA=",
+        "lastModified": 1794530105,
+        "narHash": "sha256-OnOXORETuXRN9PrLJK8R02z+5qA7FV7mh/XTPd/pL8s=",
         "owner": "emaki-desktop",
         "repo": "emaki",
-        "rev": "4021c27f7c767a30af037ff0cda940b2945bd306",
+        "rev": "a292c1ae95e086a8690e4f8799c199d73de8fe30",
         "type": "github"
       },
       "original": {
@@ -213,11 +213,11 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1794333622,
-        "narHash": "sha256-7u2cLVDn2sveP3Mv+MHGAYmCGMTYm0VcMTIyapGvnD8=",
+        "lastModified": 1794529116,
+        "narHash": "sha256-g3a3VTlwVs7n3+i4okZiHKpyxkW0QadbwMV/aDA2aeA=",
         "owner": "emaki-desktop",
         "repo": "niri",
-        "rev": "621a4a93dd1f94ccec01554939c9d3c7d67cf576",
+        "rev": "75390c72e40b04d1908fac3cb3d00dc079086d7d",
         "type": "github"
       },
       "original": {
