@@ -18,6 +18,7 @@ modules/
   apps.nix             system packages
   managed.nix          settings Emaki Settings owns (reads managed/settings.json) + its activate helper
   options.nix          our own options (amane.*): idle timeouts, on-demand units, packages from Settings, the update check timer
+  power.nix            energy options (emaki.*): device power saving, Wi-Fi power save, Bluetooth at boot, sleep on battery, Syncthing direct, journal size, weekly store optimise
 managed/
   registry.nix         which settings Emaki Settings may own, and their NixOS option paths
   settings.json        their values — written by Emaki Settings, or by hand
@@ -236,8 +237,10 @@ emaki's `docs/developer/integration/nixos.md`.
 What lives in `managed/settings.json` today: the time zone; the computer's name, language and
 keyboard layout/variant (General; the console keymap follows the layout); the services on the
 Services page (SSH, Avahi, Syncthing, KDE Connect, Flatpak, fprintd, fwupd, Bluetooth, Tailscale,
-Sunshine) and whether SSH/Avahi start at boot; the hypridle idle timeouts (Power & Lock, through
-`emaki.idle.*` in `modules/options.nix`); packages added from Settings → Apps (`emaki.packages`,
+Sunshine) and whether SSH/Avahi start at boot; the hypridle idle timeouts and sleep on battery (Power & Lock, through
+`emaki.idle.*` in `modules/options.nix` and `modules/power.nix`); the Energy Saving switches
+(Power & Lock: device power saving, Wi-Fi power save, Bluetooth at startup, Syncthing over
+Tailscale only, Bitwarden at login, weekly store deduplication, journal size; `modules/power.nix`); packages added from Settings → Apps (`emaki.packages`,
 nixpkgs attribute paths); the boot entries kept; how often to check for updates. Settings →
 Software Update checks for updates by building against a fresh lock first; applying one writes
 `flake.lock` and commits it with `managed/settings.json` as `update: …`.
