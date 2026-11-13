@@ -160,8 +160,10 @@ in
       }
       ++ lib.optional (cfg.idle.screenOffAfter > 0) {
         timeout = cfg.idle.screenOffAfter;
-        on-timeout = "niri msg action power-off-monitors";
-        on-resume = "niri msg action power-on-monitors";
+        # through the shell, so its windows stop drawing and polling with the
+        # screen (`screen off|on`); niri directly when the shell isn't answering
+        on-timeout = ''[ "$(printf 'screen\noff\n' | nc -U -N /run/user/$(id -u)/emaki.sock)" = ok ] || niri msg action power-off-monitors'';
+        on-resume = ''[ "$(printf 'screen\non\n' | nc -U -N /run/user/$(id -u)/emaki.sock)" = ok ] || niri msg action power-on-monitors'';
       };
   };
 }
